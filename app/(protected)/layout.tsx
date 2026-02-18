@@ -1,0 +1,83 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { Button } from "@/components/ui/button";
+
+export default async function ProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <nav className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+          <div className="flex items-center gap-6">
+            <Link
+              href="/"
+              className="text-lg font-bold tracking-tight text-primary"
+            >
+              ATP Rank
+            </Link>
+            <div className="hidden items-center gap-4 sm:flex">
+              <Link
+                href="/dashboard"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Leaderboard
+              </Link>
+              <Link
+                href="/matches/new"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Record Match
+              </Link>
+              <Link
+                href="/challenges"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Challenges
+              </Link>
+              <Link
+                href="/tournaments"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Tournaments
+              </Link>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <form
+              action={async () => {
+                "use server";
+                const supabase = await createClient();
+                await supabase.auth.signOut();
+                redirect("/login");
+              }}
+            >
+              <Button variant="ghost" size="sm" type="submit">
+                Sign Out
+              </Button>
+            </form>
+          </div>
+        </nav>
+      </header>
+      <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+    </div>
+  );
+}

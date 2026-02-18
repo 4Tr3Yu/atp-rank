@@ -70,8 +70,8 @@ components/shared/     — Player select, empty state, skeletons
 ## Environment Variables
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=        # Supabase project URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY=   # Supabase publishable anon key
+NEXT_PUBLIC_SUPABASE_URL=                       # Supabase project URL
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=   # Supabase publishable key
 ```
 
 ## Conventions
