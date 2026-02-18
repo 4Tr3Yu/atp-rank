@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function AuthLayout({
@@ -6,12 +7,13 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+    <div className="relative flex min-h-screen flex-col items-center justify-center px-4">
       <Link
         href="/"
-        className="mb-8 text-2xl font-bold tracking-tight text-primary"
+        className="mb-8 inline-flex items-baseline gap-2 text-2xl font-bold tracking-tight text-primary"
       >
-        RIA ATP Rank
+        <Image src="/ria.svg" alt="RIA" width={40} height={28} />
+        <span>ATP Rank</span>
       </Link>
       {children}
     </div>

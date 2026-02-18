@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { BackgroundDecoration } from "@/components/layout/background-decoration";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -26,6 +27,7 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
+          <BackgroundDecoration />
           {children}
           <Toaster />
         </ThemeProvider>

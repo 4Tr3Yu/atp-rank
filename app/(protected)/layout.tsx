@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -21,15 +22,16 @@ export default async function ProtectedLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen">
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <nav className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
           <div className="flex items-center gap-6">
             <Link
               href="/"
-              className="text-lg font-bold tracking-tight text-primary"
+              className="inline-flex items-baseline gap-2 text-lg font-bold tracking-tight text-primary"
             >
-              RIA ATP Rank
+              <Image src="/ria.svg" alt="RIA" width={32} height={22} />
+              <span>ATP Rank</span>
             </Link>
             <div className="hidden items-center gap-4 sm:flex">
               <Link
