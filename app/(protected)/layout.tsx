@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { RecordMatchTrigger } from "@/components/matches/record-match-trigger";
+import { CreateChallengeTrigger } from "@/components/challenges/create-challenge-trigger";
 
 export default async function ProtectedLayout({
   children,
@@ -57,6 +58,7 @@ export default async function ProtectedLayout({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <CreateChallengeTrigger variant="outline" />
             <RecordMatchTrigger />
             <form
               action={async () => {

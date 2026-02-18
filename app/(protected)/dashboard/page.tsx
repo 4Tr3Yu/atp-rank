@@ -3,6 +3,13 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MatchList } from "@/components/matches/match-list";
+import { ChallengeList } from "@/components/challenges/challenge-list";
+import { RecordMatchTrigger } from "@/components/matches/record-match-trigger";
+import { CreateChallengeTrigger } from "@/components/challenges/create-challenge-trigger";
+import {
+  respondToChallenge,
+  cancelChallenge,
+} from "@/app/(protected)/challenges/actions";
 import type { Profile } from "@/lib/types/database";
 
 export default async function DashboardPage() {
@@ -35,7 +42,15 @@ export default async function DashboardPage() {
     .order("played_at", { ascending: false })
     .limit(5);
 
-  // Profile map for match cards
+  // Pending challenges received
+  const { data: pendingChallenges } = await supabase
+    .from("challenges")
+    .select("*")
+    .eq("challenged_id", user!.id)
+    .eq("status", "pending")
+    .order("created_at", { ascending: false });
+
+  // Profile map
   const { data: profiles } = await supabase.from("profiles").select("*");
   const profileMap = new Map<string, Profile>();
   for (const p of profiles || []) {
@@ -94,16 +109,34 @@ export default async function DashboardPage() {
 
       {/* Quick actions */}
       <div className="flex flex-wrap gap-3">
-        <Button asChild>
-          <Link href="/matches/new">Record Match</Link>
-        </Button>
-        <Button variant="outline" asChild>
-          <Link href="/challenges/new">Send Challenge</Link>
-        </Button>
+        <RecordMatchTrigger />
+        <CreateChallengeTrigger variant="outline" />
         <Button variant="outline" asChild>
           <Link href="/tournaments">Tournaments</Link>
         </Button>
       </div>
+
+      {/* Pending challenges */}
+      {(pendingChallenges || []).length > 0 && (
+        <div>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Pending Challenges</h2>
+            <Link
+              href="/challenges"
+              className="text-sm text-primary hover:underline"
+            >
+              View all
+            </Link>
+          </div>
+          <ChallengeList
+            challenges={pendingChallenges || []}
+            profiles={profileMap}
+            currentUserId={user!.id}
+            respondAction={respondToChallenge}
+            cancelAction={cancelChallenge}
+          />
+        </div>
+      )}
 
       {/* Recent matches */}
       <div>
