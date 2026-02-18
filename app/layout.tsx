@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ATP Rank",
+  title: " RIA ATP Rank",
   description: "Mario Tennis rankings for the crew",
 };
 

@@ -21,7 +21,7 @@ export default async function PublicLayout({
               href="/"
               className="text-lg font-bold tracking-tight text-primary"
             >
-              ATP Rank
+              RIA ATP Rank
             </Link>
             <div className="hidden items-center gap-4 sm:flex">
               <Link

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { RecordMatchTrigger } from "@/components/matches/record-match-trigger";
 import { CreateChallengeTrigger } from "@/components/challenges/create-challenge-trigger";
+import { MobileNav } from "@/components/layout/mobile-nav";
 
 export default async function ProtectedLayout({
   children,
@@ -28,7 +29,7 @@ export default async function ProtectedLayout({
               href="/"
               className="text-lg font-bold tracking-tight text-primary"
             >
-              ATP Rank
+              RIA ATP Rank
             </Link>
             <div className="hidden items-center gap-4 sm:flex">
               <Link
@@ -75,7 +76,10 @@ export default async function ProtectedLayout({
           </div>
         </nav>
       </header>
-      <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+      <main className="mx-auto max-w-5xl px-4 py-8 pb-20 sm:pb-8">
+        {children}
+      </main>
+      <MobileNav />
     </div>
   );
 }

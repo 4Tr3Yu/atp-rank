@@ -11,7 +11,7 @@ export default function AuthLayout({
         href="/"
         className="mb-8 text-2xl font-bold tracking-tight text-primary"
       >
-        ATP Rank
+        RIA ATP Rank
       </Link>
       {children}
     </div>
