@@ -1,4 +1,14 @@
-export default function HomePage() {
+import { createClient } from "@/lib/supabase/server";
+import { LeaderboardTable } from "@/components/leaderboard/leaderboard-table";
+
+export default async function HomePage() {
+  const supabase = await createClient();
+
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("*")
+    .order("elo_rating", { ascending: false });
+
   return (
     <div className="space-y-6">
       <div>
@@ -7,9 +17,7 @@ export default function HomePage() {
           Current rankings based on Elo rating
         </p>
       </div>
-      <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">
-        No players yet. Sign up to get started!
-      </div>
+      <LeaderboardTable profiles={profiles || []} />
     </div>
   );
 }

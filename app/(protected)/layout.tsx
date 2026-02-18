@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
+import { RecordMatchTrigger } from "@/components/matches/record-match-trigger";
 
 export default async function ProtectedLayout({
   children,
@@ -42,12 +43,6 @@ export default async function ProtectedLayout({
                 Leaderboard
               </Link>
               <Link
-                href="/matches/new"
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Record Match
-              </Link>
-              <Link
                 href="/challenges"
                 className="text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
@@ -62,6 +57,7 @@ export default async function ProtectedLayout({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <RecordMatchTrigger />
             <form
               action={async () => {
                 "use server";
