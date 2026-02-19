@@ -31,6 +31,7 @@ export function MatchList({
             match={match}
             winner={winner}
             loser={loser}
+            layout={layout}
           />
         );
       })}

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Zen_Dots } from "next/font/google";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +9,8 @@ import { RecordMatchTrigger } from "@/components/matches/record-match-trigger";
 import { CreateChallengeTrigger } from "@/components/challenges/create-challenge-trigger";
 import { NavActions } from "@/components/layout/nav-actions";
 import { MobileNav } from "@/components/layout/mobile-nav";
+
+const zenDots = Zen_Dots({ weight: "400", subsets: ["latin"] });
 
 export default async function ProtectedLayout({
   children,
@@ -32,7 +35,7 @@ export default async function ProtectedLayout({
             className="inline-flex items-baseline gap-2 text-lg font-bold tracking-tight text-primary"
           >
             <Image src="/ria.svg" alt="RIA" width={32} height={22} />
-            <span>ATP Rank</span>
+            <span className={zenDots.className}>ATP Rank</span>
             <Badge variant="secondary" className="text-[10px] px-1.5 py-0 relative -top-1">beta</Badge>
           </Link>
           <div className="flex items-center gap-2">

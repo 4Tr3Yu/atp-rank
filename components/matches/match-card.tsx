@@ -26,10 +26,12 @@ export function MatchCard({
   match,
   winner,
   loser,
+  layout,
 }: {
   match: Match;
   winner: Profile;
   loser: Profile;
+  layout?: "list" | "grid";
 }) {
   return (
     <div className={`relative flex items-center justify-around gap-4 rounded-xl border border-border p-4 overflow-hidden ${zenDots.className}`}>
@@ -42,11 +44,13 @@ export function MatchCard({
         href={`/player/${winner.id}`}
         className="relative z-20 flex items-center gap-2 hover:opacity-80 transition-opacity"
       >
-        <Avatar className="h-8 w-8">
-          <AvatarFallback className="bg-green-500/10 text-green-400 text-xs">
-            {getInitials(winner.display_name || winner.username)}
-          </AvatarFallback>
-        </Avatar>
+        {layout !== "grid" && (
+          <Avatar className="h-8 w-8">
+            <AvatarFallback className="bg-green-500/10 text-green-400 text-xs">
+              {getInitials(winner.display_name || winner.username)}
+            </AvatarFallback>
+          </Avatar>
+        )}
         <div className="min-w-0">
           <p className="text-lg font-medium truncate">
             {winner.display_name || winner.username}
@@ -58,7 +62,7 @@ export function MatchCard({
       </Link>
       {/* VS */}
       <div className="relative z-20 flex flex-col items-center gap-1">
-        <span className="text-5xl shrink-0 drop-shadow-lg">
+        <span className={`shrink-0 drop-shadow-lg ${layout === "grid" ? "text-3xl" : "text-5xl"}`}>
           VS
         </span>
         <span className="text-xs text-muted-foreground shrink-0">
@@ -70,11 +74,13 @@ export function MatchCard({
         href={`/player/${loser.id}`}
         className="relative z-20 flex items-center gap-2 hover:opacity-80 transition-opacity"
       >
-        <Avatar className="h-8 w-8">
-          <AvatarFallback className="bg-red-500/10 text-red-400 text-xs">
-            {getInitials(loser.display_name || loser.username)}
-          </AvatarFallback>
-        </Avatar>
+        {layout !== "grid" && (
+          <Avatar className="h-8 w-8">
+            <AvatarFallback className="bg-red-500/10 text-red-400 text-xs">
+              {getInitials(loser.display_name || loser.username)}
+            </AvatarFallback>
+          </Avatar>
+        )}
         <div className="min-w-0">
           <p className="text-lg font-medium truncate">
             {loser.display_name || loser.username}
