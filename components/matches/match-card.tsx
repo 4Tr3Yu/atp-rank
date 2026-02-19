@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { Zen_Dots } from "next/font/google";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { Match, Profile } from "@/lib/types/database";
+
+const zenDots = Zen_Dots({ weight: "400", subsets: ["latin"] });
 
 function getInitials(name: string) {
   return name.slice(0, 2).toUpperCase();
@@ -29,11 +32,15 @@ export function MatchCard({
   loser: Profile;
 }) {
   return (
-    <div className="flex items-center justify-around gap-4 rounded-xl border border-border bg-card p-4 bg-linear-to-br from-orange-500/45 to-black">
+    <div className={`relative flex items-center justify-around gap-4 rounded-xl border border-border p-4 overflow-hidden ${zenDots.className}`}>
+      {/* Diagonal split background */}
+      <div className="absolute inset-0 bg-zinc-900/80" />
+      <div className="absolute inset-0 bg-orange-500/40 origin-top-left -skew-x-12" style={{ clipPath: "polygon(0 0, 60% 0, 40% 100%, 0 100%)" }} />
+     
       {/* Winner */}
       <Link
         href={`/player/${winner.id}`}
-        className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+        className="relative z-20 flex items-center gap-2 hover:opacity-80 transition-opacity"
       >
         <Avatar className="h-8 w-8">
           <AvatarFallback className="bg-green-500/10 text-green-400 text-xs">
@@ -41,7 +48,7 @@ export function MatchCard({
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0">
-          <p className="text-sm font-medium truncate">
+          <p className="text-lg font-medium truncate">
             {winner.display_name || winner.username}
           </p>
           <p className="text-xs text-green-400 tabular-nums">
@@ -50,18 +57,18 @@ export function MatchCard({
         </div>
       </Link>
       {/* VS */}
-      <div className="flex flex-col items-center gap-1 linme">
-        <span className="text-2xl font-bold  shrink-0">
-          VS.
+      <div className="relative z-20 flex flex-col items-center gap-1">
+        <span className="text-5xl shrink-0 drop-shadow-lg">
+          VS
         </span>
-        <span className="ml-auto text-xs text-muted-foreground shrink-0">
+        <span className="text-xs text-muted-foreground shrink-0">
           {timeAgo(match.played_at)}
         </span>
       </div>
       {/* Loser */}
       <Link
         href={`/player/${loser.id}`}
-        className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+        className="relative z-20 flex items-center gap-2 hover:opacity-80 transition-opacity"
       >
         <Avatar className="h-8 w-8">
           <AvatarFallback className="bg-red-500/10 text-red-400 text-xs">
@@ -69,7 +76,7 @@ export function MatchCard({
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0">
-          <p className="text-sm font-medium truncate">
+          <p className="text-lg font-medium truncate">
             {loser.display_name || loser.username}
           </p>
           <p className="text-xs text-red-400 tabular-nums">
