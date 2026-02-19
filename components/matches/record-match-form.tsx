@@ -48,9 +48,22 @@ export function RecordMatchForm({
   const winner = didWin === true ? currentUser : opponent;
   const loser = didWin === true ? opponent : currentUser;
 
+  // Derive ranks from sorted players array (already sorted by elo_rating DESC)
+  const winnerRank = winner
+    ? players.findIndex((p) => p.id === winner.id) + 1
+    : 0;
+  const loserRank = loser
+    ? players.findIndex((p) => p.id === loser.id) + 1
+    : 0;
+  const totalPlayers = players.length;
+
   const preview =
     winner && loser && didWin !== null
-      ? calculateEloChange(winner.elo_rating, loser.elo_rating)
+      ? calculateEloChange(winner.elo_rating, loser.elo_rating, {
+          winnerRank,
+          loserRank,
+          totalPlayers,
+        })
       : null;
 
   return (
@@ -104,9 +117,14 @@ export function RecordMatchForm({
 
       {preview !== null && winner && loser && (
         <div className="rounded-xl border border-border bg-card p-4 space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">
-            Elo Preview
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-muted-foreground">
+              Elo Preview
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Rank #{winnerRank} vs #{loserRank}
+            </p>
+          </div>
           <div className="flex justify-between text-sm">
             <span>{winner.display_name || winner.username}</span>
             <span className="text-green-400 tabular-nums font-medium">
