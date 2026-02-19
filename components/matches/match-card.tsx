@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { Zen_Dots } from "next/font/google";
+import { zenDots } from "@/lib/fonts";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { Match, Profile } from "@/lib/types/database";
 
-const zenDots = Zen_Dots({ weight: "400", subsets: ["latin"] });
 
 function getInitials(name: string) {
   return name.slice(0, 2).toUpperCase();

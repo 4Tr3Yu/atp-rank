@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Zen_Dots } from "next/font/google";
+import { zenDots } from "@/lib/fonts";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +10,6 @@ import { CreateChallengeTrigger } from "@/components/challenges/create-challenge
 import { NavActions } from "@/components/layout/nav-actions";
 import { MobileNav } from "@/components/layout/mobile-nav";
 
-const zenDots = Zen_Dots({ weight: "400", subsets: ["latin"] });
 
 export default async function ProtectedLayout({
   children,

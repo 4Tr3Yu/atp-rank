@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react"
+import { createContext, useContext, useOptimistic, useCallback, type ReactNode } from "react"
 
 interface LoadingContextValue {
   isLoading: boolean
@@ -10,11 +10,7 @@ interface LoadingContextValue {
 const LoadingContext = createContext<LoadingContextValue | null>(null)
 
 export function LoadingProvider({ children }: { children: ReactNode }) {
-  const [isLoading, setIsLoading] = useState(false)
-
-  const setLoading = useCallback((loading: boolean) => {
-    setIsLoading(loading)
-  }, [])
+  const [isLoading, setLoading] = useOptimistic(false)
 
   return (
     <LoadingContext.Provider value={{ isLoading, setLoading }}>
@@ -39,11 +35,7 @@ export function useFormAction<T extends unknown[]>(
   const wrappedAction = useCallback(
     async (...args: T) => {
       setLoading(true)
-      try {
-        await action(...args)
-      } finally {
-        setLoading(false)
-      }
+      await action(...args)
     },
     [action, setLoading]
   )
