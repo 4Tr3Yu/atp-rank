@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { RecordMatchTrigger } from "@/components/matches/record-match-trigger";
 import { CreateChallengeTrigger } from "@/components/challenges/create-challenge-trigger";
 import { NavActions } from "@/components/layout/nav-actions";
@@ -32,6 +33,7 @@ export default async function ProtectedLayout({
           >
             <Image src="/ria.svg" alt="RIA" width={32} height={22} />
             <span>ATP Rank</span>
+            <Badge variant="secondary" className="text-[10px] px-1.5 py-0 relative -top-1">beta</Badge>
           </Link>
           <div className="flex items-center gap-2">
             <NavActions>

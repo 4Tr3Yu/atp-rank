@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export default async function PublicLayout({
   children,
@@ -24,6 +25,7 @@ export default async function PublicLayout({
             >
               <Image src="/ria.svg" alt="RIA" width={32} height={22} />
               <span>ATP Rank</span>
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 relative -top-1">beta</Badge>
             </Link>
           </div>
           <div>
