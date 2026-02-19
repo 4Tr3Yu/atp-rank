@@ -9,6 +9,7 @@ import { RecordMatchTrigger } from "@/components/matches/record-match-trigger";
 import { CreateChallengeTrigger } from "@/components/challenges/create-challenge-trigger";
 import { NavActions } from "@/components/layout/nav-actions";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { Footer } from "@/components/layout/footer";
 
 
 export default async function ProtectedLayout({
@@ -60,6 +61,7 @@ export default async function ProtectedLayout({
       <main className="mx-auto max-w-5xl px-4 py-8 pb-20 sm:pb-8">
         {children}
       </main>
+      <Footer />
       <MobileNav />
     </div>
   );

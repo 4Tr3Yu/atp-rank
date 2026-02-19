@@ -4,6 +4,7 @@ import { zenDots } from "@/lib/fonts";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Footer } from "@/components/layout/footer";
 
 
 export default async function PublicLayout({
@@ -44,6 +45,7 @@ export default async function PublicLayout({
         </nav>
       </header>
       <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+      <Footer />
     </div>
   );
 }
