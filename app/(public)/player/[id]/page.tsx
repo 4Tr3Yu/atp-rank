@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { BackButton } from "@/components/shared/back-button";
 import { PlayerCard } from "@/components/profile/player-card";
 import { StatsGrid } from "@/components/profile/stats-grid";
 import { EloChart } from "@/components/profile/elo-chart";
@@ -48,6 +49,7 @@ export default async function PlayerProfilePage({
 
   return (
     <div className="space-y-6">
+      <BackButton />
       <PlayerCard profile={profile} rank={rank} />
       <StatsGrid profile={profile} matches={matches || []} />
       <EloChart matches={matches || []} playerId={id} />

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { PendingMatchList } from "@/components/matches/pending-match-list";
+import { BackButton } from "@/components/shared/back-button";
 import { confirmMatch, declineMatch } from "./actions";
 import type { Profile } from "@/lib/types/database";
 
@@ -33,6 +34,7 @@ export default async function PendingMatchesPage({
 
   return (
     <div className="space-y-6">
+      <BackButton />
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Pending Matches</h1>
         <p className="text-muted-foreground">

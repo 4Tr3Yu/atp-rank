@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
+import { BackButton } from "@/components/shared/back-button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { BracketView } from "@/components/tournaments/bracket-view";
@@ -75,6 +76,7 @@ export default async function TournamentDetailPage({
 
   return (
     <div className="space-y-6">
+      <BackButton />
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>

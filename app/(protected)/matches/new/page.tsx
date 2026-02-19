@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { RecordMatchForm } from "@/components/matches/record-match-form";
+import { BackButton } from "@/components/shared/back-button";
 import { recordMatch } from "./actions";
 
 export default async function RecordMatchPage() {
@@ -15,6 +16,7 @@ export default async function RecordMatchPage() {
 
   return (
     <div className="mx-auto max-w-md space-y-6">
+      <BackButton />
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Record Match</h1>
         <p className="text-muted-foreground">

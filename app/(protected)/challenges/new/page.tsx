@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { CreateChallengeForm } from "@/components/challenges/create-challenge-form";
+import { BackButton } from "@/components/shared/back-button";
 import { createChallenge } from "../actions";
 
 export default async function NewChallengePage() {
@@ -15,6 +16,7 @@ export default async function NewChallengePage() {
 
   return (
     <div className="mx-auto max-w-md space-y-6">
+      <BackButton />
       <div>
         <h1 className="text-3xl font-bold tracking-tight">New Challenge</h1>
         <p className="text-muted-foreground">

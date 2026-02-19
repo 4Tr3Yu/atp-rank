@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { TournamentForm } from "@/components/tournaments/tournament-form";
+import { BackButton } from "@/components/shared/back-button";
 import { createTournament } from "../actions";
 
 export default async function NewTournamentPage() {
@@ -10,6 +11,7 @@ export default async function NewTournamentPage() {
 
   return (
     <div className="mx-auto max-w-md space-y-6">
+      <BackButton />
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
           Create Tournament
