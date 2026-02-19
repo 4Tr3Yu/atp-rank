@@ -90,7 +90,7 @@ export default async function DashboardPage() {
             <p className="text-2xl font-bold text-primary tabular-nums">
               {profile?.elo_rating || 1200}
             </p>
-            <TierBadge eloRating={profile?.elo_rating || 1200} size="xs" />
+            <TierBadge eloRating={profile?.elo_rating || 1200} showLabel />
           </CardContent>
         </Card>
         <Card>

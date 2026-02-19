@@ -19,7 +19,7 @@ export function LeaderboardTable({ profiles }: { profiles: Profile[] }) {
 
   return (
     <div className="rounded-xl border border-border bg-card">
-      <Table>
+      <Table className="overflow-visible">
         <TableHeader>
           <TableRow>
             <TableHead className="w-16 text-center">Rank</TableHead>
@@ -29,7 +29,7 @@ export function LeaderboardTable({ profiles }: { profiles: Profile[] }) {
             <TableHead className="text-right">Win %</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="overflow-visible">
           {profiles.map((profile, index) => (
             <LeaderboardRow
               key={profile.id}

@@ -21,7 +21,7 @@ export function LeaderboardRow({
     .toUpperCase();
 
   return (
-    <TableRow>
+    <TableRow className="relative overflow-visible">
       <TableCell className="w-16 text-center">
         <RankBadge rank={rank} />
       </TableCell>
@@ -30,11 +30,13 @@ export function LeaderboardRow({
           href={`/player/${profile.id}`}
           className="flex items-center gap-3 hover:opacity-80 transition-opacity"
         >
-          <Avatar className="h-8 w-8">
+          {/* <Avatar className="h-8 w-8">
             <AvatarFallback className="bg-primary/10 text-primary text-xs">
               {initials}
             </AvatarFallback>
-          </Avatar>
+          </Avatar> */}
+          <TierBadge eloRating={profile.elo_rating} />
+
           <div>
             <p className="font-medium leading-none">
               {profile.display_name || profile.username}
@@ -45,7 +47,6 @@ export function LeaderboardRow({
       </TableCell>
       <TableCell className="text-right">
         <div className="flex items-center justify-end gap-2">
-          <TierBadge eloRating={profile.elo_rating} size="xs" showLabel={false} />
           <span className="font-bold text-primary tabular-nums">{profile.elo_rating}</span>
         </div>
       </TableCell>

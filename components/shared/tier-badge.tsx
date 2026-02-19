@@ -1,10 +1,10 @@
 import { getTier } from "@/lib/tiers";
+import { TierGem } from "@/components/shared/tier-gem";
 import { cn } from "@/lib/utils";
 
 export function TierBadge({
   eloRating,
-  size = "sm",
-  showLabel = true,
+  showLabel = false,
 }: {
   eloRating: number;
   size?: "xs" | "sm" | "md";
@@ -12,30 +12,21 @@ export function TierBadge({
 }) {
   const tier = getTier(eloRating);
 
-  const sizeClasses = {
-    xs: "text-[10px] px-1.5 py-0 gap-0.5",
-    sm: "text-xs px-2 py-0.5 gap-1",
-    md: "text-sm px-2.5 py-1 gap-1.5",
-  };
-
-  const iconSizes = {
-    xs: "text-[10px]",
-    sm: "text-xs",
-    md: "text-sm",
+  const gemSizes = {
+    xs: 10,
+    sm: 14,
+    md: 24,
   };
 
   return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full border font-medium",
-        tier.bgColor,
-        tier.borderColor,
-        tier.color,
-        sizeClasses[size]
-      )}
-    >
-      <span className={iconSizes[size]}>{tier.icon}</span>
-      {showLabel && tier.name}
+    <span className={cn(
+      "inline-flex items-center gap-1 font-medium",
+      tier.color,
+    )}>
+      <TierGem tier={tier} size={gemSizes['md']} />
+      <span>
+        {showLabel && tier.name}
+      </span>
     </span>
   );
 }
