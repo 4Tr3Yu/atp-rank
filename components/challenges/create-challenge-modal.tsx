@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useFormAction, useLoading } from "@/lib/loading-context";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -32,21 +35,27 @@ function ChallengeFormContent({
 }: {
   players: Profile[];
   currentUserId: string;
-  action: (formData: FormData) => Promise<void>;
+  action: (formData: FormData) => Promise<{ error?: string }>;
   onSuccess: () => void;
 }) {
   const [challengedId, setChallengedId] = useState("");
-  const [pending, setPending] = useState(false);
+  const { isLoading } = useLoading();
+  const router = useRouter();
 
-  async function handleSubmit(formData: FormData) {
-    setPending(true);
-    try {
-      await action(formData);
+  const wrappedAction = useCallback(
+    async (formData: FormData) => {
+      const result = await action(formData);
+      if (result?.error) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Challenge sent!");
       onSuccess();
-    } finally {
-      setPending(false);
-    }
-  }
+      router.push("/challenges");
+    },
+    [action, onSuccess, router]
+  );
+  const handleSubmit = useFormAction(wrappedAction);
 
   return (
     <form action={handleSubmit} className="space-y-5 pt-2">
@@ -76,9 +85,9 @@ function ChallengeFormContent({
       <Button
         type="submit"
         className="w-full"
-        disabled={!challengedId || pending}
+        disabled={!challengedId || isLoading}
       >
-        {pending ? "Sending..." : "Send Challenge"}
+        {isLoading ? "Sending..." : "Send Challenge"}
       </Button>
     </form>
   );
@@ -92,7 +101,7 @@ export function CreateChallengeModal({
 }: {
   players: Profile[];
   currentUserId: string;
-  action: (formData: FormData) => Promise<void>;
+  action: (formData: FormData) => Promise<{ error?: string }>;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);

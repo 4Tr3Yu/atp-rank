@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export async function createChallenge(formData: FormData) {
+export async function createChallenge(formData: FormData): Promise<{ error?: string }> {
   const supabase = await createClient();
 
   const challengerId = formData.get("challenger_id") as string;
@@ -18,11 +18,12 @@ export async function createChallenge(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/challenges/new?error=${encodeURIComponent(error.message)}`);
+    return { error: error.message };
   }
 
   revalidatePath("/challenges");
-  redirect("/challenges");
+  revalidatePath("/dashboard");
+  return {};
 }
 
 export async function respondToChallenge(formData: FormData) {
