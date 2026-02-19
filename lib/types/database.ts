@@ -10,6 +10,8 @@ export interface Profile {
   updated_at: string;
 }
 
+export type MatchStatus = "pending" | "confirmed" | "declined";
+
 export interface Match {
   id: string;
   winner_id: string;
@@ -21,6 +23,8 @@ export interface Match {
   tournament_match_id: string | null;
   played_at: string;
   recorded_by: string;
+  status: MatchStatus;
+  confirmed_at: string | null;
 }
 
 export type ChallengeStatus =

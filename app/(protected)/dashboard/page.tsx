@@ -34,13 +34,24 @@ export default async function DashboardPage() {
   const rank = (allProfiles || []).findIndex((p) => p.id === user!.id) + 1;
   const totalPlayers = (allProfiles || []).length;
 
-  // Recent matches for this user
+  // Recent matches for this user (confirmed only)
   const { data: matches } = await supabase
     .from("matches")
     .select("*")
+    .eq("status", "confirmed")
     .or(`winner_id.eq.${user!.id},loser_id.eq.${user!.id}`)
     .order("played_at", { ascending: false })
     .limit(5);
+
+  // Pending matches awaiting user's confirmation
+  const { data: pendingMatches } = await supabase
+    .from("matches")
+    .select("id")
+    .eq("status", "pending")
+    .or(`winner_id.eq.${user!.id},loser_id.eq.${user!.id}`)
+    .neq("recorded_by", user!.id);
+
+  const pendingMatchCount = (pendingMatches || []).length;
 
   // Pending challenges received
   const { data: pendingChallenges } = await supabase
@@ -67,7 +78,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Navigation cards */}
-      <NavCards />
+      <NavCards pendingMatchCount={pendingMatchCount} />
 
       {/* Quick stats */}
       <div>

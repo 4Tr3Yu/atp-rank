@@ -29,7 +29,7 @@ export function MatchCard({
   loser: Profile;
 }) {
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
+    <div className="flex items-center justify-around gap-4 rounded-xl border border-border bg-card p-4 bg-linear-to-br from-orange-500/45 to-black">
       {/* Winner */}
       <Link
         href={`/player/${winner.id}`}
@@ -49,12 +49,15 @@ export function MatchCard({
           </p>
         </div>
       </Link>
-
       {/* VS */}
-      <span className="text-xs font-bold text-muted-foreground shrink-0">
-        def.
-      </span>
-
+      <div className="flex flex-col items-center gap-1 linme">
+        <span className="text-2xl font-bold  shrink-0">
+          VS.
+        </span>
+        <span className="ml-auto text-xs text-muted-foreground shrink-0">
+          {timeAgo(match.played_at)}
+        </span>
+      </div>
       {/* Loser */}
       <Link
         href={`/player/${loser.id}`}
@@ -74,11 +77,6 @@ export function MatchCard({
           </p>
         </div>
       </Link>
-
-      {/* Time */}
-      <span className="ml-auto text-xs text-muted-foreground shrink-0">
-        {timeAgo(match.played_at)}
-      </span>
     </div>
   );
 }

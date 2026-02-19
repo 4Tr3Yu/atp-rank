@@ -14,6 +14,7 @@ export default async function HomePage() {
   const { data: recentMatches } = await supabase
     .from("matches")
     .select("*")
+    .eq("status", "confirmed")
     .order("played_at", { ascending: false })
     .limit(5);
 
