@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { TierBadge } from "@/components/shared/tier-badge";
 import type { Profile } from "@/lib/types/database";
 
 export function PlayerCard({
@@ -30,6 +31,7 @@ export function PlayerCard({
             {profile.display_name || profile.username}
           </h2>
           <Badge variant="outline">#{rank}</Badge>
+          <TierBadge eloRating={profile.elo_rating} size="sm" />
         </div>
         <p className="text-sm text-muted-foreground">@{profile.username}</p>
         <div className="flex items-center gap-4 text-sm">

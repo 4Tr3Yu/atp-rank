@@ -6,6 +6,7 @@ import { ChallengeList } from "@/components/challenges/challenge-list";
 import { RecordMatchTrigger } from "@/components/matches/record-match-trigger";
 import { CreateChallengeTrigger } from "@/components/challenges/create-challenge-trigger";
 import { NavCards } from "@/components/layout/nav-cards";
+import { TierBadge } from "@/components/shared/tier-badge";
 import {
   respondToChallenge,
   cancelChallenge,
@@ -85,11 +86,11 @@ export default async function DashboardPage() {
         <h2 className="mb-3 text-lg font-semibold">Stats</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Card>
-          <CardContent className="p-4 text-center">
+          <CardContent className="p-4 text-center space-y-1">
             <p className="text-2xl font-bold text-primary tabular-nums">
               {profile?.elo_rating || 1200}
             </p>
-            <p className="text-xs text-muted-foreground">Elo Rating</p>
+            <TierBadge eloRating={profile?.elo_rating || 1200} size="xs" />
           </CardContent>
         </Card>
         <Card>

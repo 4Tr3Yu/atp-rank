@@ -2,6 +2,7 @@ import Link from "next/link";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { RankBadge } from "./rank-badge";
+import { TierBadge } from "@/components/shared/tier-badge";
 import type { Profile } from "@/lib/types/database";
 
 export function LeaderboardRow({
@@ -42,8 +43,11 @@ export function LeaderboardRow({
           </div>
         </Link>
       </TableCell>
-      <TableCell className="text-right font-bold text-primary tabular-nums">
-        {profile.elo_rating}
+      <TableCell className="text-right">
+        <div className="flex items-center justify-end gap-2">
+          <TierBadge eloRating={profile.elo_rating} size="xs" showLabel={false} />
+          <span className="font-bold text-primary tabular-nums">{profile.elo_rating}</span>
+        </div>
       </TableCell>
       <TableCell className="text-right tabular-nums">
         <span className="text-green-400">{profile.wins}W</span>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getTier } from "@/lib/tiers";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -77,7 +78,8 @@ export function PlayerSelect({
                   <span className="font-medium">
                     {player.display_name || player.username}
                   </span>
-                  <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+                  <span className="ml-auto flex items-center gap-1.5 text-xs text-muted-foreground tabular-nums">
+                    <span>{getTier(player.elo_rating).icon}</span>
                     {player.elo_rating}
                   </span>
                 </CommandItem>
