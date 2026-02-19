@@ -9,7 +9,7 @@ const navItems = [
   { href: "/", label: "Leaderboard", icon: Trophy, description: "View rankings" },
   { href: "/challenges", label: "Challenges", icon: Swords, description: "1v1 battles" },
   { href: "/tournaments", label: "Tournaments", icon: Medal, description: "Compete & win" },
-  { href: "/profile", label: "Profile", icon: User, description: "Your stats" },
+  { href: "/profile", label: "Profile", icon: User, description: "Edit your info" },
 ];
 
 export function NavCards() {
@@ -24,7 +24,7 @@ export function NavCards() {
             key={href}
             href={href}
             className={cn(
-              "group flex flex-col items-center gap-1 rounded-xl border p-4 transition-all hover:border-primary/50 hover:bg-primary/5",
+              "group flex items-center gap-3 rounded-xl border p-4 transition-all hover:border-primary/50 hover:bg-primary/5",
               isActive
                 ? "border-primary/50 bg-primary/10"
                 : "border-border bg-card"
@@ -36,15 +36,17 @@ export function NavCards() {
                 isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary"
               )}
             />
-            <span
-              className={cn(
-                "text-sm font-medium",
-                isActive ? "text-primary" : "text-foreground"
-              )}
-            >
-              {label}
-            </span>
-            <span className="text-[10px] text-muted-foreground">{description}</span>
+            <div className="flex flex-col items-start">
+              <span
+                className={cn(
+                  "text-sm font-medium",
+                  isActive ? "text-primary" : "text-foreground"
+                )}
+              >
+                {label}
+              </span>
+              <span className="text-[10px] text-muted-foreground">{description}</span>
+            </div>
           </Link>
         );
       })}
