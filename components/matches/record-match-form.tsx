@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { PlayerSelect } from "@/components/shared/player-select";
 import { calculateEloChange } from "@/lib/elo";
 import { useFormAction } from "@/lib/loading-context";
+import { cn } from "@/lib/utils";
 import type { Profile } from "@/lib/types/database";
 
 export function RecordMatchForm({
@@ -17,15 +18,21 @@ export function RecordMatchForm({
   currentUserId: string;
   action: (formData: FormData) => Promise<void>;
 }) {
-  const [winnerId, setWinnerId] = useState("");
-  const [loserId, setLoserId] = useState("");
+  const [opponentId, setOpponentId] = useState("");
+  const [didWin, setDidWin] = useState<boolean | null>(null);
   const handleSubmit = useFormAction(action);
 
-  const winner = players.find((p) => p.id === winnerId);
-  const loser = players.find((p) => p.id === loserId);
+  const currentUser = players.find((p) => p.id === currentUserId);
+  const opponent = players.find((p) => p.id === opponentId);
+
+  // Calculate winner/loser based on result
+  const winnerId = didWin === true ? currentUserId : opponentId;
+  const loserId = didWin === true ? opponentId : currentUserId;
+  const winner = didWin === true ? currentUser : opponent;
+  const loser = didWin === true ? opponent : currentUser;
 
   const preview =
-    winner && loser
+    winner && loser && didWin !== null
       ? calculateEloChange(winner.elo_rating, loser.elo_rating)
       : null;
 
@@ -36,25 +43,46 @@ export function RecordMatchForm({
       <input type="hidden" name="recorded_by" value={currentUserId} />
 
       <div className="space-y-2">
-        <Label>Winner</Label>
+        <Label>Opponent</Label>
         <PlayerSelect
           players={players}
-          value={winnerId}
-          onSelect={setWinnerId}
-          placeholder="Who won?"
-          excludeId={loserId}
+          value={opponentId}
+          onSelect={setOpponentId}
+          placeholder="Who did you play against?"
+          excludeId={currentUserId}
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Loser</Label>
-        <PlayerSelect
-          players={players}
-          value={loserId}
-          onSelect={setLoserId}
-          placeholder="Who lost?"
-          excludeId={winnerId}
-        />
+        <Label>Result</Label>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => setDidWin(true)}
+            className={cn(
+              "flex flex-col items-center gap-1 rounded-xl border-2 p-4 transition-all",
+              didWin === true
+                ? "border-green-500 bg-green-500/10 text-green-400"
+                : "border-border bg-card hover:border-green-500/50"
+            )}
+          >
+            <span className="text-2xl">🏆</span>
+            <span className="text-sm font-medium">I Won</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setDidWin(false)}
+            className={cn(
+              "flex flex-col items-center gap-1 rounded-xl border-2 p-4 transition-all",
+              didWin === false
+                ? "border-red-500 bg-red-500/10 text-red-400"
+                : "border-border bg-card hover:border-red-500/50"
+            )}
+          >
+            <span className="text-2xl">😢</span>
+            <span className="text-sm font-medium">I Lost</span>
+          </button>
+        </div>
       </div>
 
       {preview !== null && winner && loser && (
@@ -81,7 +109,7 @@ export function RecordMatchForm({
       <Button
         type="submit"
         className="w-full"
-        disabled={!winnerId || !loserId}
+        disabled={!opponentId || didWin === null}
       >
         Record Match
       </Button>
