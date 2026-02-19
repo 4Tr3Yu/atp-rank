@@ -25,20 +25,6 @@ export default async function PublicLayout({
               <Image src="/ria.svg" alt="RIA" width={32} height={22} />
               <span>ATP Rank</span>
             </Link>
-            <div className="hidden items-center gap-4 sm:flex">
-              <Link
-                href="/"
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Leaderboard
-              </Link>
-              <Link
-                href="/matches"
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Matches
-              </Link>
-            </div>
           </div>
           <div>
             {user ? (
