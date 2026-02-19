@@ -41,7 +41,10 @@ export async function updateSession(request: NextRequest) {
     path.startsWith("/matches") ||
     path.startsWith("/player") ||
     path.startsWith("/login") ||
-    path.startsWith("/signup");
+    path.startsWith("/signup") ||
+    path.startsWith("/forgot-password") ||
+    path.startsWith("/reset-password") ||
+    path.startsWith("/auth");
 
   // Redirect unauthenticated users from protected routes to login
   if (!user && !isPublicPath) {
