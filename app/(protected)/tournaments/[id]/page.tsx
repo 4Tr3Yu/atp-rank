@@ -2,10 +2,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { BracketView } from "@/components/tournaments/bracket-view";
+import { TournamentActions } from "@/components/tournaments/tournament-actions";
 import {
   joinTournament,
   leaveTournament,
@@ -95,30 +95,16 @@ export default async function TournamentDetailPage({
             </p>
           )}
         </div>
-        <div className="flex gap-2">
-          {canJoin && (
-            <form action={joinTournament}>
-              <input type="hidden" name="tournament_id" value={id} />
-              <input type="hidden" name="player_id" value={user!.id} />
-              <Button type="submit">Join</Button>
-            </form>
-          )}
-          {canLeave && (
-            <form action={leaveTournament}>
-              <input type="hidden" name="tournament_id" value={id} />
-              <input type="hidden" name="player_id" value={user!.id} />
-              <Button type="submit" variant="outline">
-                Leave
-              </Button>
-            </form>
-          )}
-          {canStart && (
-            <form action={startTournament}>
-              <input type="hidden" name="tournament_id" value={id} />
-              <Button type="submit">Start Tournament</Button>
-            </form>
-          )}
-        </div>
+        <TournamentActions
+          tournamentId={id}
+          userId={user!.id}
+          canJoin={canJoin}
+          canLeave={canLeave}
+          canStart={canStart}
+          joinAction={joinTournament}
+          leaveAction={leaveTournament}
+          startAction={startTournament}
+        />
       </div>
 
       <Separator />

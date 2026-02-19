@@ -4,6 +4,8 @@ import { GeistMono } from "geist/font/mono";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { BackgroundDecoration } from "@/components/layout/background-decoration";
+import { LoadingProvider } from "@/lib/loading-context";
+import { GlobalLoader } from "@/components/shared/global-loader";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -27,9 +29,12 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <BackgroundDecoration />
-          {children}
-          <Toaster />
+          <LoadingProvider>
+            <BackgroundDecoration />
+            {children}
+            <GlobalLoader />
+            <Toaster />
+          </LoadingProvider>
         </ThemeProvider>
       </body>
     </html>

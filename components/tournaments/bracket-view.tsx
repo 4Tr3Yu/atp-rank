@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useFormAction } from "@/lib/loading-context";
 import type { TournamentMatch, Profile } from "@/lib/types/database";
 
 function getInitials(name: string) {
@@ -21,6 +22,7 @@ function BracketMatch({
   canRecord: boolean;
   recordAction: (formData: FormData) => Promise<void>;
 }) {
+  const handleRecord = useFormAction(recordAction);
   const player1 = match.player1_id ? profiles.get(match.player1_id) : null;
   const player2 = match.player2_id ? profiles.get(match.player2_id) : null;
   const isReady = player1 && player2 && !match.winner_id;
@@ -84,7 +86,7 @@ function BracketMatch({
       {/* Record buttons */}
       {isReady && canRecord && (
         <div className="mt-2 flex gap-1">
-          <form action={recordAction} className="flex-1">
+          <form action={handleRecord} className="flex-1">
             <input type="hidden" name="tournament_match_id" value={match.id} />
             <input
               type="hidden"
@@ -98,7 +100,7 @@ function BracketMatch({
               {(player1?.display_name || player1?.username || "").split(" ")[0]} wins
             </Button>
           </form>
-          <form action={recordAction} className="flex-1">
+          <form action={handleRecord} className="flex-1">
             <input type="hidden" name="tournament_match_id" value={match.id} />
             <input
               type="hidden"

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useFormAction } from "@/lib/loading-context";
 import {
   Select,
   SelectContent,
@@ -19,8 +20,10 @@ export function TournamentForm({
   currentUserId: string;
   action: (formData: FormData) => Promise<void>;
 }) {
+  const handleSubmit = useFormAction(action);
+
   return (
-    <form action={action} className="space-y-5">
+    <form action={handleSubmit} className="space-y-5">
       <input type="hidden" name="created_by" value={currentUserId} />
 
       <div className="space-y-2">

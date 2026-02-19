@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { PlayerSelect } from "@/components/shared/player-select";
 import { calculateEloChange } from "@/lib/elo";
+import { useFormAction } from "@/lib/loading-context";
 import type { Profile } from "@/lib/types/database";
 
 export function RecordMatchForm({
@@ -18,6 +19,7 @@ export function RecordMatchForm({
 }) {
   const [winnerId, setWinnerId] = useState("");
   const [loserId, setLoserId] = useState("");
+  const handleSubmit = useFormAction(action);
 
   const winner = players.find((p) => p.id === winnerId);
   const loser = players.find((p) => p.id === loserId);
@@ -28,7 +30,7 @@ export function RecordMatchForm({
       : null;
 
   return (
-    <form action={action} className="space-y-6">
+    <form action={handleSubmit} className="space-y-6">
       <input type="hidden" name="winner_id" value={winnerId} />
       <input type="hidden" name="loser_id" value={loserId} />
       <input type="hidden" name="recorded_by" value={currentUserId} />

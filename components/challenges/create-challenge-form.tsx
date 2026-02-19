@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PlayerSelect } from "@/components/shared/player-select";
+import { useFormAction } from "@/lib/loading-context";
 import type { Profile } from "@/lib/types/database";
 
 export function CreateChallengeForm({
@@ -17,9 +18,10 @@ export function CreateChallengeForm({
   action: (formData: FormData) => Promise<void>;
 }) {
   const [challengedId, setChallengedId] = useState("");
+  const handleSubmit = useFormAction(action);
 
   return (
-    <form action={action} className="space-y-5">
+    <form action={handleSubmit} className="space-y-5">
       <input type="hidden" name="challenger_id" value={currentUserId} />
       <input type="hidden" name="challenged_id" value={challengedId} />
 

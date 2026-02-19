@@ -1,8 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { ProfileForm } from "@/components/profile/profile-form";
 import { updateProfile } from "./actions";
 
 export default async function ProfilePage() {
@@ -28,38 +26,12 @@ export default async function ProfilePage() {
           <CardTitle>Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <form action={updateProfile} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                name="username"
-                defaultValue={profile?.username || ""}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="display_name">Display Name</Label>
-              <Input
-                id="display_name"
-                name="display_name"
-                defaultValue={profile?.display_name || ""}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="avatar_url">Avatar URL</Label>
-              <Input
-                id="avatar_url"
-                name="avatar_url"
-                type="url"
-                placeholder="https://..."
-                defaultValue={profile?.avatar_url || ""}
-              />
-            </div>
-            <Button type="submit" className="w-full">
-              Save Changes
-            </Button>
-          </form>
+          <ProfileForm
+            action={updateProfile}
+            username={profile?.username || ""}
+            displayName={profile?.display_name || ""}
+            avatarUrl={profile?.avatar_url || ""}
+          />
         </CardContent>
       </Card>
     </div>

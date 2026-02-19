@@ -1,11 +1,11 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { MatchList } from "@/components/matches/match-list";
 import { ChallengeList } from "@/components/challenges/challenge-list";
 import { RecordMatchTrigger } from "@/components/matches/record-match-trigger";
 import { CreateChallengeTrigger } from "@/components/challenges/create-challenge-trigger";
+import { NavCards } from "@/components/layout/nav-cards";
 import {
   respondToChallenge,
   cancelChallenge,
@@ -66,8 +66,13 @@ export default async function DashboardPage() {
         </p>
       </div>
 
+      {/* Navigation cards */}
+      <NavCards />
+
       {/* Quick stats */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div>
+        <h2 className="mb-3 text-lg font-semibold">Stats</h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Card>
           <CardContent className="p-4 text-center">
             <p className="text-2xl font-bold text-primary tabular-nums">
@@ -105,15 +110,13 @@ export default async function DashboardPage() {
             <p className="text-xs text-muted-foreground">Total Matches</p>
           </CardContent>
         </Card>
+        </div>
       </div>
 
       {/* Quick actions */}
       <div className="flex flex-wrap gap-3">
         <RecordMatchTrigger />
         <CreateChallengeTrigger variant="outline" />
-        <Button variant="outline" asChild>
-          <Link href="/tournaments">Tournaments</Link>
-        </Button>
       </div>
 
       {/* Pending challenges */}

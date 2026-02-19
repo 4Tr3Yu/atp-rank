@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { RecordMatchTrigger } from "@/components/matches/record-match-trigger";
 import { CreateChallengeTrigger } from "@/components/challenges/create-challenge-trigger";
+import { NavActions } from "@/components/layout/nav-actions";
 import { MobileNav } from "@/components/layout/mobile-nav";
 
 export default async function ProtectedLayout({
@@ -25,44 +26,18 @@ export default async function ProtectedLayout({
     <div className="relative min-h-screen">
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <nav className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <div className="flex items-center gap-6">
-            <Link
-              href="/"
-              className="inline-flex items-baseline gap-2 text-lg font-bold tracking-tight text-primary"
-            >
-              <Image src="/ria.svg" alt="RIA" width={32} height={22} />
-              <span>ATP Rank</span>
-            </Link>
-            <div className="hidden items-center gap-4 sm:flex">
-              <Link
-                href="/dashboard"
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/"
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Leaderboard
-              </Link>
-              <Link
-                href="/challenges"
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Challenges
-              </Link>
-              <Link
-                href="/tournaments"
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Tournaments
-              </Link>
-            </div>
-          </div>
+          <Link
+            href="/dashboard"
+            className="inline-flex items-baseline gap-2 text-lg font-bold tracking-tight text-primary"
+          >
+            <Image src="/ria.svg" alt="RIA" width={32} height={22} />
+            <span>ATP Rank</span>
+          </Link>
           <div className="flex items-center gap-2">
-            <CreateChallengeTrigger variant="outline" />
-            <RecordMatchTrigger />
+            <NavActions>
+              <CreateChallengeTrigger variant="outline" />
+              <RecordMatchTrigger />
+            </NavActions>
             <form
               action={async () => {
                 "use server";
