@@ -87,7 +87,7 @@ export function PendingMatchCard({
                 isWinner ? "text-green-400" : "text-red-400"
               }`}
             >
-              {isWinner ? "+" : "-"}{eloChange}
+              ~{isWinner ? "+" : "-"}{eloChange}
             </span>
             <span className="text-xs text-muted-foreground">
               ({currentElo} → {newElo})
