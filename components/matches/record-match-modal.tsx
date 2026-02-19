@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useFormAction, useLoading } from "@/lib/loading-context";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -62,12 +65,28 @@ function RecordMatchContent({
 }: {
   players: Profile[];
   currentUserId: string;
-  action: (formData: FormData) => Promise<void>;
+  action: (formData: FormData) => Promise<{ error?: string }>;
   onSuccess: () => void;
 }) {
   const [opponentId, setOpponentId] = useState("");
   const [didWin, setDidWin] = useState<boolean | null>(null);
-  const [pending, setPending] = useState(false);
+  const { isLoading } = useLoading();
+  const router = useRouter();
+
+  const wrappedAction = useCallback(
+    async (formData: FormData) => {
+      const result = await action(formData);
+      if (result?.error) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Match recorded! Waiting for opponent confirmation.");
+      onSuccess();
+      router.push("/dashboard");
+    },
+    [action, onSuccess, router]
+  );
+  const handleSubmit = useFormAction(wrappedAction);
 
   const currentUser = players.find((p) => p.id === currentUserId);
   const opponent = players.find((p) => p.id === opponentId);
@@ -82,16 +101,6 @@ function RecordMatchContent({
     winner && loser && didWin !== null
       ? calculateEloChange(winner.elo_rating, loser.elo_rating)
       : null;
-
-  async function handleSubmit(formData: FormData) {
-    setPending(true);
-    try {
-      await action(formData);
-      onSuccess();
-    } finally {
-      setPending(false);
-    }
-  }
 
   return (
     <form action={handleSubmit} className="space-y-5 pt-2">
@@ -149,9 +158,9 @@ function RecordMatchContent({
       <Button
         type="submit"
         className="w-full"
-        disabled={!opponentId || didWin === null || pending}
+        disabled={!opponentId || didWin === null || isLoading}
       >
-        {pending ? "Recording..." : "Record Match"}
+        {isLoading ? "Recording..." : "Record Match"}
       </Button>
     </form>
   );
@@ -165,7 +174,7 @@ export function RecordMatchModal({
 }: {
   players: Profile[];
   currentUserId: string;
-  action: (formData: FormData) => Promise<void>;
+  action: (formData: FormData) => Promise<{ error?: string }>;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);

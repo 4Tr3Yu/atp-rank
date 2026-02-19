@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { PlayerSelect } from "@/components/shared/player-select";
 import { calculateEloChange } from "@/lib/elo";
-import { useFormAction } from "@/lib/loading-context";
+import { useFormAction, useLoading } from "@/lib/loading-context";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/lib/types/database";
 
@@ -16,11 +18,26 @@ export function RecordMatchForm({
 }: {
   players: Profile[];
   currentUserId: string;
-  action: (formData: FormData) => Promise<void>;
+  action: (formData: FormData) => Promise<{ error?: string }>;
 }) {
   const [opponentId, setOpponentId] = useState("");
   const [didWin, setDidWin] = useState<boolean | null>(null);
-  const handleSubmit = useFormAction(action);
+  const { isLoading } = useLoading();
+  const router = useRouter();
+
+  const wrappedAction = useCallback(
+    async (formData: FormData) => {
+      const result = await action(formData);
+      if (result?.error) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Match recorded! Waiting for opponent confirmation.");
+      router.push("/dashboard");
+    },
+    [action, router]
+  );
+  const handleSubmit = useFormAction(wrappedAction);
 
   const currentUser = players.find((p) => p.id === currentUserId);
   const opponent = players.find((p) => p.id === opponentId);
@@ -109,9 +126,9 @@ export function RecordMatchForm({
       <Button
         type="submit"
         className="w-full"
-        disabled={!opponentId || didWin === null}
+        disabled={!opponentId || didWin === null || isLoading}
       >
-        Record Match
+        {isLoading ? "Recording..." : "Record Match"}
       </Button>
     </form>
   );

@@ -1,10 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export async function recordMatch(formData: FormData) {
+export async function recordMatch(formData: FormData): Promise<{ error?: string }> {
   const supabase = await createClient();
 
   const winnerId = formData.get("winner_id") as string;
@@ -24,9 +23,7 @@ export async function recordMatch(formData: FormData) {
     });
 
     if (error) {
-      redirect(
-        `/matches/new?error=${encodeURIComponent(error.message)}`
-      );
+      return { error: error.message };
     }
   } else {
     // Regular matches require opponent confirmation
@@ -38,12 +35,10 @@ export async function recordMatch(formData: FormData) {
     });
 
     if (error) {
-      redirect(
-        `/matches/new?error=${encodeURIComponent(error.message)}`
-      );
+      return { error: error.message };
     }
   }
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  return {};
 }
