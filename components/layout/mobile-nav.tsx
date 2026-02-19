@@ -9,11 +9,13 @@ import {
   Swords,
   Medal,
   User,
+  ClipboardCheck,
 } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: Home },
   { href: "/", label: "Ranks", icon: Trophy },
+  { href: "/matches/pending", label: "Confirm", icon: ClipboardCheck },
   { href: "/challenges", label: "Challenges", icon: Swords },
   { href: "/tournaments", label: "Tourneys", icon: Medal },
   { href: "/profile", label: "Profile", icon: User },
