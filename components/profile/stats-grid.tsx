@@ -28,18 +28,26 @@ export function StatsGrid({
   profile: Profile;
   matches: Match[];
 }) {
-  const totalMatches = profile.wins + profile.losses;
-  const winRate = totalMatches > 0
-    ? Math.round((profile.wins / totalMatches) * 100)
+  // Season stats
+  const seasonMatches = profile.wins + profile.losses;
+  const seasonWinRate = seasonMatches > 0
+    ? Math.round((profile.wins / seasonMatches) * 100)
     : 0;
+
+  // All-time stats
+  const totalWins = profile.total_wins ?? profile.wins;
+  const totalLosses = profile.total_losses ?? profile.losses;
+  const allTimeMatches = totalWins + totalLosses;
+  const allTimeWinRate = allTimeMatches > 0
+    ? Math.round((totalWins / allTimeMatches) * 100)
+    : 0;
+
   const streak = calculateStreak(matches, profile.id);
 
-  // Calculate best/worst Elo from match history
+  // Calculate best Elo from match history
   let bestElo = profile.elo_rating;
-  let worstElo = profile.elo_rating;
-  let currentElo = 1200; // starting
+  let currentElo = 1200;
 
-  // Rebuild Elo history from matches (oldest to newest)
   const sortedMatches = [...matches].reverse();
   for (const match of sortedMatches) {
     if (match.winner_id === profile.id) {
@@ -48,14 +56,29 @@ export function StatsGrid({
       currentElo = Math.max(100, match.loser_elo_before - match.elo_change);
     }
     bestElo = Math.max(bestElo, currentElo);
-    worstElo = Math.min(worstElo, currentElo);
   }
 
   const stats = [
-    { label: "Matches", value: totalMatches.toString() },
-    { label: "Win Rate", value: `${winRate}%` },
-    { label: "Streak", value: streak },
-    { label: "Best Elo", value: bestElo.toString() },
+    {
+      label: "Record",
+      value: `${profile.wins}-${profile.losses}`,
+      subtext: `All-time: ${totalWins}-${totalLosses}`,
+    },
+    {
+      label: "Win Rate",
+      value: `${seasonWinRate}%`,
+      subtext: `All-time: ${allTimeWinRate}%`,
+    },
+    {
+      label: "Streak",
+      value: streak,
+      subtext: `${seasonMatches} games`,
+    },
+    {
+      label: "Best Elo",
+      value: bestElo.toString(),
+      subtext: `Current: ${profile.elo_rating}`,
+    },
   ];
 
   return (
@@ -65,6 +88,11 @@ export function StatsGrid({
           <CardContent className="p-4 text-center">
             <p className="text-2xl font-bold tabular-nums">{stat.value}</p>
             <p className="text-xs text-muted-foreground">{stat.label}</p>
+            {stat.subtext && (
+              <p className="text-xs text-muted-foreground/70 mt-1">
+                {stat.subtext}
+              </p>
+            )}
           </CardContent>
         </Card>
       ))}

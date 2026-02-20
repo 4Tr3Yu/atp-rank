@@ -5,7 +5,8 @@ import { PlayerCard } from "@/components/profile/player-card";
 import { StatsGrid } from "@/components/profile/stats-grid";
 import { EloChart } from "@/components/profile/elo-chart";
 import { MatchList } from "@/components/matches/match-list";
-import type { Profile } from "@/lib/types/database";
+import { PlayerMedals } from "@/components/seasons/player-medals";
+import type { Profile, Season, SeasonWinner } from "@/lib/types/database";
 
 export default async function PlayerProfilePage({
   params,
@@ -40,6 +41,16 @@ export default async function PlayerProfilePage({
     .order("played_at", { ascending: false })
     .limit(50);
 
+  // Fetch player's medals
+  const { data: medals } = await supabase
+    .from("season_winners")
+    .select(`
+      *,
+      season:seasons(id, name, slug)
+    `)
+    .eq("player_id", id)
+    .order("awarded_at", { ascending: false });
+
   // Build profile map for match cards
   const { data: profiles } = await supabase.from("profiles").select("*");
   const profileMap = new Map<string, Profile>();
@@ -47,11 +58,17 @@ export default async function PlayerProfilePage({
     profileMap.set(p.id, p);
   }
 
+  // Type the medals properly
+  const typedMedals = (medals || []) as Array<
+    SeasonWinner & { season: Pick<Season, "id" | "name" | "slug"> }
+  >;
+
   return (
     <div className="space-y-6">
       <BackButton />
       <PlayerCard profile={profile} rank={rank} />
       <StatsGrid profile={profile} matches={matches || []} />
+      {typedMedals.length > 0 && <PlayerMedals medals={typedMedals} />}
       <EloChart matches={matches || []} playerId={id} />
       <div>
         <h2 className="mb-3 text-lg font-semibold">Match History</h2>
