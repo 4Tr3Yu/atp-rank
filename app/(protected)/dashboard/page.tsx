@@ -7,17 +7,25 @@ import { RecordMatchTrigger } from "@/components/matches/record-match-trigger";
 import { CreateChallengeTrigger } from "@/components/challenges/create-challenge-trigger";
 import { NavCards } from "@/components/layout/nav-cards";
 import { TierBadge } from "@/components/shared/tier-badge";
+import { SeasonTag } from "@/components/seasons/season-badge";
 import {
   respondToChallenge,
   cancelChallenge,
 } from "@/app/(protected)/challenges/actions";
-import type { Profile } from "@/lib/types/database";
+import type { Profile, Season } from "@/lib/types/database";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Fetch active season
+  const { data: activeSeason } = await supabase
+    .from("seasons")
+    .select("*")
+    .eq("status", "active")
+    .single();
 
   // Fetch current user's profile
   const { data: profile } = await supabase
@@ -69,10 +77,17 @@ export default async function DashboardPage() {
     profileMap.set(p.id, p);
   }
 
+  // Calculate all-time stats
+  const totalWins = profile?.total_wins ?? profile?.wins ?? 0;
+  const totalLosses = profile?.total_losses ?? profile?.losses ?? 0;
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <div className="flex items-center gap-3 mb-1">
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          {activeSeason && <SeasonTag season={activeSeason as Season} />}
+        </div>
         <p className="text-muted-foreground">
           Welcome back, {profile?.display_name || user?.email}
         </p>
@@ -111,7 +126,10 @@ export default async function DashboardPage() {
               {" / "}
               <span className="text-red-400">{profile?.losses || 0}</span>
             </p>
-            <p className="text-xs text-muted-foreground">W / L</p>
+            <p className="text-xs text-muted-foreground">Season W / L</p>
+            <p className="text-xs text-muted-foreground/70">
+              All-time: {totalWins}-{totalLosses}
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -119,7 +137,10 @@ export default async function DashboardPage() {
             <p className="text-2xl font-bold tabular-nums">
               {(profile?.wins || 0) + (profile?.losses || 0)}
             </p>
-            <p className="text-xs text-muted-foreground">Total Matches</p>
+            <p className="text-xs text-muted-foreground">Season Matches</p>
+            <p className="text-xs text-muted-foreground/70">
+              All-time: {totalWins + totalLosses}
+            </p>
           </CardContent>
         </Card>
         </div>
