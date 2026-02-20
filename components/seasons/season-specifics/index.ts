@@ -3,6 +3,7 @@ import type { ComponentType } from "react";
 // Season hero components registry
 // Add new seasons here as they are created
 const seasonHeroes: Record<string, () => Promise<{ default: ComponentType }>> = {
+  "s00-origins": () => import("./s00-origins/hero"),
   "s1-genesis": () => import("./s1-genesis/hero"),
   // Add future seasons here:
   // "s2-name": () => import("./s2-name/hero"),
@@ -32,6 +33,12 @@ export interface SeasonMedalAssets {
 }
 
 const seasonMedals: Record<string, SeasonMedalAssets> = {
+  "s00-origins": {
+    gold: "/seasons/s00-origins/medal-gold.svg",
+    silver: "/seasons/s00-origins/medal-silver.svg",
+    bronze: "/seasons/s00-origins/medal-bronze.svg",
+    mvp: "/seasons/s00-origins/medal-mvp.svg",
+  },
   "s1-genesis": {
     gold: "/seasons/s1-genesis/medal-gold.svg",
     silver: "/seasons/s1-genesis/medal-silver.svg",

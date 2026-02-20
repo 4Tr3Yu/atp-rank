@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -2 84 68" fill="none">
+  <!-- Spikes behind shield (1 per side for bronze) -->
+  <path d="M8 24L-6 24L8 34Z" fill="url(#spikeGrad)" stroke="#6B3E10" stroke-width="0.5"/>
+
+  <path d="M56 24L70 24L56 34Z" fill="url(#spikeGradR)" stroke="#6B3E10" stroke-width="0.5"/>
+
+  <!-- Bottom ornament - 3D ribbon -->
+  <path d="M24 52L20 58L28 56L32 60L36 56L44 58L40 52" fill="#4A2D0A" stroke="none"/>
+  <path d="M24 51L20 57L28 55L32 59L36 55L44 57L40 51" fill="url(#ribbonGrad)" stroke="#6B3E10" stroke-width="0.5" stroke-linejoin="miter"/>
+  <path d="M28 53L32 56L36 53L32 55Z" fill="#FFDAB9" opacity="0.3"/>
+
+  <!-- Drop shadow for depth -->
+  <path d="M34 6L10 16L10 40L34 60L58 40L58 16Z" fill="#2D1A08" opacity="0.3"/>
+
+  <!-- Shield base - dark edge -->
+  <path d="M32 4L8 14L8 38L32 58L56 38L56 14Z" fill="url(#bronzeBase)" stroke="#6B3E10" stroke-width="2" stroke-linejoin="miter"/>
+
+  <!-- Shield main surface -->
+  <path d="M32 6L10 15L10 37L32 55L54 37L54 15Z" fill="url(#bronzeMain)" stroke="none"/>
+
+  <!-- Shield highlight (top-left bevel) -->
+  <path d="M32 6L10 15L10 26L32 16L54 26L54 15Z" fill="url(#bronzeHighlight)" opacity="0.6"/>
+
+  <!-- Inner shield - recessed -->
+  <path d="M32 10L14 18L14 36L32 52L50 36L50 18Z" fill="url(#bronzeInner)" stroke="#8B4513" stroke-width="1" stroke-linejoin="miter"/>
+
+  <!-- Inner shield shadow (top edge) -->
+  <path d="M32 10L14 18L14 22L32 14L50 22L50 18Z" fill="#6B3E10" opacity="0.3"/>
+
+  <!-- Inner shield highlight (bottom) -->
+  <path d="M32 48L14 34L14 36L32 52L50 36L50 34Z" fill="#FFDAB9" opacity="0.4"/>
+
+  <!-- Top ornament - angular crown with depth -->
+  <path d="M24 6L28 2L32 6L36 2L40 6" stroke="#4A2D0A" stroke-width="5" stroke-linejoin="miter" fill="none"/>
+  <path d="M24 6L28 2L32 6L36 2L40 6" stroke="url(#crownGrad)" stroke-width="3" stroke-linejoin="miter" fill="none"/>
+
+  <!-- Diamond at top - 3D -->
+  <path d="M32 0L35 4L32 8L29 4Z" fill="url(#diamondGrad)" stroke="#8B4513" stroke-width="0.5"/>
+  <path d="M32 0L33 4L32 5L31 4Z" fill="#FFDAB9" opacity="0.5"/>
+
+  <!-- Center diamond emblem - layered 3D -->
+  <path d="M32 20L42 32L32 44L22 32Z" fill="#6B3E10" opacity="0.4"/>
+  <path d="M32 19L41 31L32 43L23 31Z" fill="url(#centerOuter)" stroke="#8B4513" stroke-width="1"/>
+  <path d="M32 23L38 32L32 41L26 32Z" fill="url(#centerMid)" stroke="#CD7F32" stroke-width="0.5"/>
+  <path d="M32 26L35 32L32 38L29 32Z" fill="url(#centerInner)" stroke="none"/>
+  <!-- Highlight on center diamond -->
+  <path d="M32 23L35 28L32 30L29 28Z" fill="#FFFFFF" opacity="0.4"/>
+
+  <defs>
+    <linearGradient id="bronzeBase" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B4513"/>
+      <stop offset="100%" stop-color="#6B3E10"/>
+    </linearGradient>
+    <linearGradient id="bronzeMain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#DEB887"/>
+      <stop offset="40%" stop-color="#CD7F32"/>
+      <stop offset="60%" stop-color="#B87333"/>
+      <stop offset="100%" stop-color="#A0522D"/>
+    </linearGradient>
+    <linearGradient id="bronzeHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#DEB887" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="bronzeInner" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B87333"/>
+      <stop offset="50%" stop-color="#8B4513"/>
+      <stop offset="100%" stop-color="#6B3E10"/>
+    </linearGradient>
+    <linearGradient id="crownGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#DEB887"/>
+      <stop offset="100%" stop-color="#A0522D"/>
+    </linearGradient>
+    <linearGradient id="diamondGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFDAB9"/>
+      <stop offset="50%" stop-color="#DEB887"/>
+      <stop offset="100%" stop-color="#A0522D"/>
+    </linearGradient>
+    <linearGradient id="spikeGrad" x1="100%" y1="0%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#B87333"/>
+      <stop offset="100%" stop-color="#6B3E10"/>
+    </linearGradient>
+    <linearGradient id="spikeGradR" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#B87333"/>
+      <stop offset="100%" stop-color="#6B3E10"/>
+    </linearGradient>
+    <linearGradient id="centerOuter" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#DEB887"/>
+      <stop offset="100%" stop-color="#8B4513"/>
+    </linearGradient>
+    <linearGradient id="centerMid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFDAB9"/>
+      <stop offset="100%" stop-color="#B87333"/>
+    </linearGradient>
+    <linearGradient id="centerInner" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#DEB887"/>
+    </linearGradient>
+    <linearGradient id="ribbonGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#CD7F32"/>
+      <stop offset="100%" stop-color="#8B4513"/>
+    </linearGradient>
+  </defs>
+</svg>

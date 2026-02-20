@@ -1,0 +1,279 @@
+<!--
+  MEDAL TEMPLATE FOR FUTURE SEASONS
+  ==================================
+
+  Copy this folder to create medals for a new season:
+  1. Copy _template folder to your season folder (e.g., s01-genesis)
+  2. Create 4 files: medal-gold.svg, medal-silver.svg, medal-bronze.svg, medal-mvp.svg
+  3. Customize colors in <defs> section
+  4. Customize center emblem shape
+  5. Adjust spike count per medal type
+
+  SPIKE COUNTS:
+  - Gold:   3 spikes per side
+  - Silver: 2 spikes per side
+  - Bronze: 1 spike per side
+  - MVP:    0 spikes (no side spikes)
+
+  COLOR SCHEME GUIDE:
+  - Base/stroke colors: Darker variants for edges and strokes
+  - Main gradient: Light to dark for 3D surface effect
+  - Highlight: White to transparent for top bevel
+  - Inner gradient: For recessed inner shield
+
+  CUSTOMIZABLE SECTIONS:
+  - CENTER EMBLEM: The layered diamond can be replaced with any shape
+    Current: Diamond (rotated square)
+    Ideas: Star, circle, hexagon, custom logo, etc.
+
+  ViewBox sizes:
+  - With spikes: "-10 -2 84 68"
+  - Without spikes (MVP): "-4 -2 72 68" or "0 0 64 64"
+-->
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -2 84 68" fill="none">
+  <!-- ============================================
+       SPIKES BEHIND SHIELD
+       Add/remove based on medal type
+       Gold=3, Silver=2, Bronze=1, MVP=0
+       ============================================ -->
+
+  <!-- LEFT SPIKES (copy/remove as needed) -->
+  <!-- Spike 1 (top) -->
+  <path d="M8 14L-4 10L8 26Z" fill="url(#spikeGrad)" stroke="{{STROKE_DARK}}" stroke-width="0.5"/>
+  <!-- Spike 2 (middle) -->
+  <path d="M8 24L-6 24L8 34Z" fill="url(#spikeGrad)" stroke="{{STROKE_DARK}}" stroke-width="0.5"/>
+  <!-- Spike 3 (bottom) - Gold only -->
+  <path d="M8 34L-4 38L8 44Z" fill="url(#spikeGrad)" stroke="{{STROKE_DARK}}" stroke-width="0.5"/>
+
+  <!-- RIGHT SPIKES (mirror of left) -->
+  <path d="M56 14L68 10L56 26Z" fill="url(#spikeGradR)" stroke="{{STROKE_DARK}}" stroke-width="0.5"/>
+  <path d="M56 24L70 24L56 34Z" fill="url(#spikeGradR)" stroke="{{STROKE_DARK}}" stroke-width="0.5"/>
+  <path d="M56 34L68 38L56 44Z" fill="url(#spikeGradR)" stroke="{{STROKE_DARK}}" stroke-width="0.5"/>
+
+  <!-- ============================================
+       BOTTOM ORNAMENT - 3D RIBBON
+       Placed early so it renders behind shield
+       ============================================ -->
+  <!-- Shadow layer -->
+  <path d="M24 52L20 58L28 56L32 60L36 56L44 58L40 52" fill="{{SHADOW_DARK}}" stroke="none"/>
+  <!-- Main ribbon -->
+  <path d="M24 51L20 57L28 55L32 59L36 55L44 57L40 51" fill="url(#ribbonGrad)" stroke="{{STROKE_DARK}}" stroke-width="0.5" stroke-linejoin="miter"/>
+  <!-- Ribbon highlight -->
+  <path d="M28 53L32 56L36 53L32 55Z" fill="{{HIGHLIGHT_COLOR}}" opacity="0.3"/>
+
+  <!-- ============================================
+       DROP SHADOW FOR DEPTH
+       ============================================ -->
+  <path d="M34 6L10 16L10 40L34 60L58 40L58 16Z" fill="{{SHADOW_DARK}}" opacity="0.3"/>
+
+  <!-- ============================================
+       SHIELD BASE - DARK EDGE
+       The outer border of the shield
+       ============================================ -->
+  <path d="M32 4L8 14L8 38L32 58L56 38L56 14Z" fill="url(#shieldBase)" stroke="{{STROKE_DARK}}" stroke-width="2" stroke-linejoin="miter"/>
+
+  <!-- ============================================
+       SHIELD MAIN SURFACE
+       The primary visible surface with gradient
+       ============================================ -->
+  <path d="M32 6L10 15L10 37L32 55L54 37L54 15Z" fill="url(#shieldMain)" stroke="none"/>
+
+  <!-- ============================================
+       SHIELD HIGHLIGHT (TOP-LEFT BEVEL)
+       Creates 3D lighting effect from top
+       ============================================ -->
+  <path d="M32 6L10 15L10 26L32 16L54 26L54 15Z" fill="url(#shieldHighlight)" opacity="0.6"/>
+
+  <!-- ============================================
+       INNER SHIELD - RECESSED
+       Creates depth by appearing inset
+       ============================================ -->
+  <path d="M32 10L14 18L14 36L32 52L50 36L50 18Z" fill="url(#shieldInner)" stroke="{{STROKE_MID}}" stroke-width="1" stroke-linejoin="miter"/>
+
+  <!-- Inner shield shadow (top edge) -->
+  <path d="M32 10L14 18L14 22L32 14L50 22L50 18Z" fill="{{STROKE_DARK}}" opacity="0.3"/>
+
+  <!-- Inner shield highlight (bottom) -->
+  <path d="M32 48L14 34L14 36L32 52L50 36L50 34Z" fill="{{HIGHLIGHT_COLOR}}" opacity="0.4"/>
+
+  <!-- ============================================
+       TOP ORNAMENT - ANGULAR CROWN
+       ============================================ -->
+  <!-- Shadow layer for depth -->
+  <path d="M24 6L28 2L32 6L36 2L40 6" stroke="{{SHADOW_DARK}}" stroke-width="5" stroke-linejoin="miter" fill="none"/>
+  <!-- Main crown -->
+  <path d="M24 6L28 2L32 6L36 2L40 6" stroke="url(#crownGrad)" stroke-width="3" stroke-linejoin="miter" fill="none"/>
+
+  <!-- ============================================
+       DIAMOND AT TOP - 3D
+       Small decorative gem on crown
+       ============================================ -->
+  <path d="M32 0L35 4L32 8L29 4Z" fill="url(#diamondGrad)" stroke="{{STROKE_MID}}" stroke-width="0.5"/>
+  <!-- Highlight -->
+  <path d="M32 0L33 4L32 5L31 4Z" fill="{{HIGHLIGHT_COLOR}}" opacity="0.5"/>
+
+  <!-- ============================================
+       CENTER EMBLEM - CUSTOMIZABLE SHAPE
+       This is the main area to customize per season!
+       Current: Layered diamond (rotated square)
+
+       To change shape, modify these 4 paths:
+       1. Shadow layer (offset slightly)
+       2. Outer layer (largest)
+       3. Middle layer
+       4. Inner layer (smallest, brightest)
+       ============================================ -->
+
+  <!-- Shadow -->
+  <path d="M32 20L42 32L32 44L22 32Z" fill="{{STROKE_DARK}}" opacity="0.4"/>
+  <!-- Outer diamond -->
+  <path d="M32 19L41 31L32 43L23 31Z" fill="url(#centerOuter)" stroke="{{STROKE_MID}}" stroke-width="1"/>
+  <!-- Middle diamond -->
+  <path d="M32 23L38 32L32 41L26 32Z" fill="url(#centerMid)" stroke="{{ACCENT_COLOR}}" stroke-width="0.5"/>
+  <!-- Inner diamond -->
+  <path d="M32 26L35 32L32 38L29 32Z" fill="url(#centerInner)" stroke="none"/>
+  <!-- Highlight on center -->
+  <path d="M32 23L35 28L32 30L29 28Z" fill="#FFFFFF" opacity="0.4"/>
+
+  <!-- ============================================
+       GRADIENT DEFINITIONS
+       Replace {{COLOR}} placeholders with actual hex colors
+
+       Color naming convention:
+       - MAIN_LIGHT:    Brightest shade (e.g., #FFE766 for gold)
+       - MAIN_MID:      Primary color (e.g., #FFD700 for gold)
+       - MAIN_DARK:     Darker shade (e.g., #DAA520 for gold)
+       - STROKE_DARK:   Darkest, for edges (e.g., #8B6914 for gold)
+       - STROKE_MID:    Medium stroke color
+       - SHADOW_DARK:   For shadows (usually very dark)
+       - HIGHLIGHT_COLOR: For highlights (usually very light)
+       - ACCENT_COLOR:  For decorative strokes
+       ============================================ -->
+  <defs>
+    <!-- Base gradient for shield outer edge -->
+    <linearGradient id="shieldBase" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="{{STROKE_MID}}"/>
+      <stop offset="100%" stop-color="{{STROKE_DARK}}"/>
+    </linearGradient>
+
+    <!-- Main surface gradient (4 stops for rich 3D) -->
+    <linearGradient id="shieldMain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="{{MAIN_LIGHT}}"/>
+      <stop offset="40%" stop-color="{{MAIN_MID}}"/>
+      <stop offset="60%" stop-color="{{MAIN_MID_ALT}}"/>
+      <stop offset="100%" stop-color="{{MAIN_DARK}}"/>
+    </linearGradient>
+
+    <!-- Top highlight (white to transparent) -->
+    <linearGradient id="shieldHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="{{MAIN_LIGHT}}" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Inner shield (recessed look) -->
+    <linearGradient id="shieldInner" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="{{MAIN_DARK}}"/>
+      <stop offset="50%" stop-color="{{STROKE_MID}}"/>
+      <stop offset="100%" stop-color="{{STROKE_DARK}}"/>
+    </linearGradient>
+
+    <!-- Crown gradient -->
+    <linearGradient id="crownGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="{{MAIN_LIGHT}}"/>
+      <stop offset="100%" stop-color="{{MAIN_DARK}}"/>
+    </linearGradient>
+
+    <!-- Top diamond gradient -->
+    <linearGradient id="diamondGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="{{HIGHLIGHT_COLOR}}"/>
+      <stop offset="50%" stop-color="{{MAIN_LIGHT}}"/>
+      <stop offset="100%" stop-color="{{MAIN_DARK}}"/>
+    </linearGradient>
+
+    <!-- Left spike gradient (fade outward) -->
+    <linearGradient id="spikeGrad" x1="100%" y1="0%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="{{MAIN_DARK}}"/>
+      <stop offset="100%" stop-color="{{STROKE_DARK}}"/>
+    </linearGradient>
+
+    <!-- Right spike gradient (mirror of left) -->
+    <linearGradient id="spikeGradR" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="{{MAIN_DARK}}"/>
+      <stop offset="100%" stop-color="{{STROKE_DARK}}"/>
+    </linearGradient>
+
+    <!-- Center emblem - outer ring -->
+    <linearGradient id="centerOuter" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="{{MAIN_LIGHT}}"/>
+      <stop offset="100%" stop-color="{{STROKE_MID}}"/>
+    </linearGradient>
+
+    <!-- Center emblem - middle ring -->
+    <linearGradient id="centerMid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="{{HIGHLIGHT_COLOR}}"/>
+      <stop offset="100%" stop-color="{{MAIN_DARK}}"/>
+    </linearGradient>
+
+    <!-- Center emblem - inner (brightest) -->
+    <linearGradient id="centerInner" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="{{MAIN_LIGHT}}"/>
+    </linearGradient>
+
+    <!-- Bottom ribbon gradient -->
+    <linearGradient id="ribbonGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="{{MAIN_MID}}"/>
+      <stop offset="100%" stop-color="{{STROKE_MID}}"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<!--
+  COLOR PALETTES FOR REFERENCE:
+  =============================
+
+  GOLD:
+    MAIN_LIGHT:     #FFE766
+    MAIN_MID:       #FFD700
+    MAIN_MID_ALT:   #FFC125
+    MAIN_DARK:      #DAA520
+    STROKE_MID:     #B8860B
+    STROKE_DARK:    #8B6914
+    SHADOW_DARK:    #3D2E0A or #5C4A1A
+    HIGHLIGHT_COLOR: #FFF8DC
+    ACCENT_COLOR:   #DAA520
+
+  SILVER:
+    MAIN_LIGHT:     #E2E8F0
+    MAIN_MID:       #A0AEC0
+    MAIN_MID_ALT:   #CBD5E0
+    MAIN_DARK:      #718096
+    STROKE_MID:     #4A5568
+    STROKE_DARK:    #2D3748
+    SHADOW_DARK:    #1A202C
+    HIGHLIGHT_COLOR: #F7FAFC
+    ACCENT_COLOR:   #718096
+
+  BRONZE:
+    MAIN_LIGHT:     #DEB887
+    MAIN_MID:       #CD7F32
+    MAIN_MID_ALT:   #B87333
+    MAIN_DARK:      #A0522D
+    STROKE_MID:     #8B4513
+    STROKE_DARK:    #6B3E10
+    SHADOW_DARK:    #4A2D0A or #2D1A08
+    HIGHLIGHT_COLOR: #FFDAB9
+    ACCENT_COLOR:   #CD7F32
+
+  MVP (PURPLE):
+    MAIN_LIGHT:     #D8B4FE
+    MAIN_MID:       #A855F7
+    MAIN_MID_ALT:   #C084FC
+    MAIN_DARK:      #7C3AED
+    STROKE_MID:     #6B21A8
+    STROKE_DARK:    #4C1D95
+    SHADOW_DARK:    #2E1065 or #1a0a2e
+    HIGHLIGHT_COLOR: #E9D5FF
+    ACCENT_COLOR:   #A855F7
+-->
