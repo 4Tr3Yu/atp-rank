@@ -6,6 +6,8 @@ export interface Profile {
   elo_rating: number;
   wins: number;
   losses: number;
+  total_wins: number;
+  total_losses: number;
   created_at: string;
   updated_at: string;
 }
@@ -21,6 +23,7 @@ export interface Match {
   elo_change: number;
   challenge_id: string | null;
   tournament_match_id: string | null;
+  season_id: string | null;
   played_at: string;
   recorded_by: string;
   status: MatchStatus;
@@ -82,4 +85,36 @@ export interface TournamentMatch {
   winner_id: string | null;
   match_id: string | null;
   scheduled_at: string | null;
+}
+
+// ============================================
+// SEASONS
+// ============================================
+
+export type SeasonStatus = "upcoming" | "active" | "completed";
+
+export interface Season {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  status: SeasonStatus;
+  starts_at: string;
+  ends_at: string;
+  created_at: string;
+  created_by: string | null;
+}
+
+export type MedalType = "gold" | "silver" | "bronze" | "mvp";
+
+export interface SeasonWinner {
+  id: string;
+  season_id: string;
+  player_id: string;
+  medal_type: MedalType;
+  final_elo: number;
+  season_wins: number;
+  season_losses: number;
+  final_rank: number;
+  awarded_at: string;
 }
