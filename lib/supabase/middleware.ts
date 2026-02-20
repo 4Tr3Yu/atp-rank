@@ -40,6 +40,7 @@ export async function updateSession(request: NextRequest) {
     path === "/" ||
     path.startsWith("/matches") ||
     path.startsWith("/player") ||
+    path.startsWith("/hall-of-fame") ||
     path.startsWith("/login") ||
     path.startsWith("/signup") ||
     path.startsWith("/forgot-password") ||
