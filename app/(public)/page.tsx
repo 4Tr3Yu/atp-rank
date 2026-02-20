@@ -1,10 +1,19 @@
 import { createClient } from "@/lib/supabase/server";
 import { LeaderboardTable } from "@/components/leaderboard/leaderboard-table";
 import { MatchList } from "@/components/matches/match-list";
-import type { Profile } from "@/lib/types/database";
+import { SeasonHero } from "@/components/seasons/season-hero";
+import { SeasonTag } from "@/components/seasons/season-badge";
+import type { Profile, Season } from "@/lib/types/database";
 
 export default async function HomePage() {
   const supabase = await createClient();
+
+  // Fetch active season
+  const { data: activeSeason } = await supabase
+    .from("seasons")
+    .select("*")
+    .eq("status", "active")
+    .single();
 
   const { data: profiles } = await supabase
     .from("profiles")
@@ -26,8 +35,16 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-6">
+      {/* Season Hero */}
+      {activeSeason && <SeasonHero season={activeSeason as Season} />}
+
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Leaderboard</h1>
+        <div className="flex items-center gap-3 mb-1">
+          <h1 className="text-3xl font-bold tracking-tight">Leaderboard</h1>
+          {activeSeason && (
+            <SeasonTag season={activeSeason as Season} />
+          )}
+        </div>
         <p className="text-muted-foreground">
           Current rankings based on Elo rating
         </p>
