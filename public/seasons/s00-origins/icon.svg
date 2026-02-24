@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="18 16 28 32" fill="none">
+  <!-- Center diamond emblem - layered 3D -->
+  <path d="M32 20L42 32L32 44L22 32Z" fill="#8B6914" opacity="0.4"/>
+  <path d="M32 19L41 31L32 43L23 31Z" fill="url(#centerOuter)" stroke="#B8860B" stroke-width="1"/>
+  <path d="M32 23L38 32L32 41L26 32Z" fill="url(#centerMid)" stroke="#DAA520" stroke-width="0.5"/>
+  <path d="M32 26L35 32L32 38L29 32Z" fill="url(#centerInner)" stroke="none"/>
+  <!-- Highlight on center diamond -->
+  <path d="M32 23L35 28L32 30L29 28Z" fill="#FFFFFF" opacity="0.4"/>
+
+  <defs>
+    <linearGradient id="centerOuter" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE766"/>
+      <stop offset="100%" stop-color="#B8860B"/>
+    </linearGradient>
+    <linearGradient id="centerMid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF8DC"/>
+      <stop offset="100%" stop-color="#DAA520"/>
+    </linearGradient>
+    <linearGradient id="centerInner" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#FFE766"/>
+    </linearGradient>
+  </defs>
+</svg>
