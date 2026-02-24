@@ -39,20 +39,23 @@ export default async function HomePage() {
       {/* Season Hero */}
       {activeSeason && <SeasonHero season={activeSeason as Season} />}
 
-      <div>
-        <div className="flex items-center gap-3 mb-1">
-          <h1 className="text-3xl font-bold tracking-tight">Leaderboard</h1>
-          {activeSeason && (
-            <SeasonTag season={activeSeason as Season} />
-          )}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+        <div className="lg:col-span-3 space-y-4">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <h1 className="text-2xl font-bold tracking-tight">Leaderboard</h1>
+              {activeSeason && (
+                <SeasonTag season={activeSeason as Season} />
+              )}
+            </div>
+          </div>
+          <LeaderboardTable profiles={profiles || []} />
         </div>
-        <p className="text-muted-foreground">
-          Current rankings based on Elo rating
-        </p>
-      </div>
-      <LeaderboardTable profiles={profiles || []} />
 
-      <ActiveChallenges />
+        <div className="lg:col-span-1">
+          <ActiveChallenges />
+        </div>
+      </div>
 
       <div>
         <h2 className="mb-3 text-lg font-semibold">Recent Matches</h2>

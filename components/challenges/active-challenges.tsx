@@ -1,13 +1,9 @@
 import Link from "next/link";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { zenDots } from "@/lib/fonts";
 import { CountdownTimer } from "./countdown-timer";
 import { createClient } from "@/lib/supabase/server";
 import { resolveExpiredChallenges } from "@/lib/challenges";
 import type { Profile } from "@/lib/types/database";
-
-function getInitials(name: string) {
-  return name.slice(0, 2).toUpperCase();
-}
 
 export async function ActiveChallenges() {
   // Lazy expiration: resolve any expired challenges before fetching
@@ -21,7 +17,16 @@ export async function ActiveChallenges() {
     .eq("status", "accepted")
     .order("expires_at", { ascending: true });
 
-  if (!challenges || challenges.length === 0) return null;
+  if (!challenges || challenges.length === 0) {
+    return (
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight mb-3">Active Challenges</h1>
+        <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">
+          No active challenges right now.
+        </div>
+      </div>
+    );
+  }
 
   // Collect unique player IDs
   const playerIds = new Set<string>();
@@ -42,16 +47,8 @@ export async function ActiveChallenges() {
 
   return (
     <div>
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Active Challenges</h2>
-        <Link
-          href="/challenges"
-          className="text-sm text-primary hover:underline"
-        >
-          View all
-        </Link>
-      </div>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <h1 className="text-2xl font-bold tracking-tight mb-3">Active Challenges</h1>
+      <div className="space-y-3">
         {challenges.map((challenge) => {
           const challenger = profileMap.get(challenge.challenger_id);
           const challenged = profileMap.get(challenge.challenged_id);
@@ -60,60 +57,59 @@ export async function ActiveChallenges() {
           return (
             <div
               key={challenge.id}
-              className="flex items-center gap-3 rounded-xl border border-border bg-card p-3"
+              className={`relative rounded-xl border border-border bg-card p-4 overflow-hidden ${zenDots.className}`}
             >
+              {/* Gradient: transparent → orange center → transparent */}
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-orange-500/15 to-transparent pointer-events-none" />
               {/* Challenger */}
               <Link
                 href={`/player/${challenger.id}`}
-                className="shrink-0 hover:opacity-80 transition-opacity"
+                className="block text-center hover:opacity-80 transition-opacity"
               >
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-primary/10 text-primary text-[10px]">
-                    {getInitials(
-                      challenger.display_name || challenger.username
-                    )}
-                  </AvatarFallback>
-                </Avatar>
+                
+                <p className="text-base font-medium truncate">
+                  {challenger.display_name || challenger.username}
+                </p>
+                <p className="text-[11px] text-orange-400 tabular-nums">
+                  {challenger.elo_rating} Elo
+                </p>
               </Link>
 
-              <div className="flex-1 min-w-0 text-center">
-                <p className="text-sm font-medium truncate">
-                  <Link
-                    href={`/player/${challenger.id}`}
-                    className="hover:underline"
-                  >
-                    {challenger.display_name || challenger.username}
-                  </Link>
-                  <span className="text-muted-foreground mx-1.5">vs</span>
-                  <Link
-                    href={`/player/${challenged.id}`}
-                    className="hover:underline"
-                  >
-                    {challenged.display_name || challenged.username}
-                  </Link>
-                </p>
-                {challenge.expires_at && (
-                  <CountdownTimer expiresAt={challenge.expires_at} />
-                )}
-              </div>
+              {/* VS */}
+              <p className="text-2xl text-center my-2 drop-shadow-lg">
+                VS
+              </p>
 
               {/* Challenged */}
               <Link
                 href={`/player/${challenged.id}`}
-                className="shrink-0 hover:opacity-80 transition-opacity"
+                className="block text-center hover:opacity-80 transition-opacity"
               >
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-primary/10 text-primary text-[10px]">
-                    {getInitials(
-                      challenged.display_name || challenged.username
-                    )}
-                  </AvatarFallback>
-                </Avatar>
+                
+                <p className="text-base font-medium truncate">
+                  {challenged.display_name || challenged.username}
+                </p>
+                <p className="text-[11px] text-blue-400 tabular-nums">
+                  {challenged.elo_rating} Elo
+                </p>
               </Link>
+
+              {/* Timer */}
+              {challenge.expires_at && (
+                <div className="mt-3 pt-3 border-t border-border text-center">
+                  <CountdownTimer expiresAt={challenge.expires_at} />
+                </div>
+              )}
             </div>
           );
         })}
       </div>
+      <Link
+        href="/challenges"
+        className="block mt-3 text-sm text-primary hover:underline text-center"
+      >
+        View all
+      </Link>
     </div>
   );
 }
