@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { LeaderboardTable } from "@/components/leaderboard/leaderboard-table";
 import { MatchList } from "@/components/matches/match-list";
+import { ActiveChallenges } from "@/components/challenges/active-challenges";
 import { SeasonHero } from "@/components/seasons/season-hero";
 import { SeasonTag } from "@/components/seasons/season-badge";
 import type { Profile, Season } from "@/lib/types/database";
@@ -50,6 +51,8 @@ export default async function HomePage() {
         </p>
       </div>
       <LeaderboardTable profiles={profiles || []} />
+
+      <ActiveChallenges />
 
       <div>
         <h2 className="mb-3 text-lg font-semibold">Recent Matches</h2>

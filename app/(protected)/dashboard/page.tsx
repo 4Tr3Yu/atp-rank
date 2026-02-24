@@ -11,10 +11,15 @@ import { SeasonTag } from "@/components/seasons/season-badge";
 import {
   respondToChallenge,
   cancelChallenge,
+  resolveChallenge,
 } from "@/app/(protected)/challenges/actions";
+import { resolveExpiredChallenges } from "@/lib/challenges";
 import type { Profile, Season } from "@/lib/types/database";
 
 export default async function DashboardPage() {
+  // Resolve any expired challenges before fetching
+  await resolveExpiredChallenges();
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -69,6 +74,14 @@ export default async function DashboardPage() {
     .eq("challenged_id", user!.id)
     .eq("status", "pending")
     .order("created_at", { ascending: false });
+
+  // Active challenges (accepted, involving current user)
+  const { data: activeChallenges } = await supabase
+    .from("challenges")
+    .select("*")
+    .eq("status", "accepted")
+    .or(`challenger_id.eq.${user!.id},challenged_id.eq.${user!.id}`)
+    .order("expires_at", { ascending: true });
 
   // Profile map
   const { data: profiles } = await supabase.from("profiles").select("*");
@@ -151,6 +164,29 @@ export default async function DashboardPage() {
         <RecordMatchTrigger />
         <CreateChallengeTrigger variant="outline" />
       </div>
+
+      {/* Active challenges */}
+      {(activeChallenges || []).length > 0 && (
+        <div>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Active Challenges</h2>
+            <Link
+              href="/challenges"
+              className="text-sm text-primary hover:underline"
+            >
+              View all
+            </Link>
+          </div>
+          <ChallengeList
+            challenges={activeChallenges || []}
+            profiles={profileMap}
+            currentUserId={user!.id}
+            respondAction={respondToChallenge}
+            cancelAction={cancelChallenge}
+            resolveAction={resolveChallenge}
+          />
+        </div>
+      )}
 
       {/* Pending challenges */}
       {(pendingChallenges || []).length > 0 && (

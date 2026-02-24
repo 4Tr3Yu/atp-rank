@@ -7,12 +7,14 @@ export function ChallengeList({
   currentUserId,
   respondAction,
   cancelAction,
+  resolveAction,
 }: {
   challenges: Challenge[];
   profiles: Map<string, Profile>;
   currentUserId: string;
   respondAction: (formData: FormData) => Promise<void>;
   cancelAction: (formData: FormData) => Promise<void>;
+  resolveAction?: (formData: FormData) => Promise<void>;
 }) {
   if (challenges.length === 0) {
     return (
@@ -38,6 +40,7 @@ export function ChallengeList({
             currentUserId={currentUserId}
             respondAction={respondAction}
             cancelAction={cancelAction}
+            resolveAction={resolveAction}
           />
         );
       })}

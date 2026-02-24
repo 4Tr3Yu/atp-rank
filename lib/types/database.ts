@@ -35,7 +35,8 @@ export type ChallengeStatus =
   | "accepted"
   | "declined"
   | "completed"
-  | "cancelled";
+  | "cancelled"
+  | "expired";
 
 export interface Challenge {
   id: string;
@@ -46,6 +47,7 @@ export interface Challenge {
   created_at: string;
   responded_at: string | null;
   completed_at: string | null;
+  expires_at: string | null;
 }
 
 export type TournamentStatus =

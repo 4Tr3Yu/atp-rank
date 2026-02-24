@@ -2,10 +2,14 @@ import { createClient } from "@/lib/supabase/server";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChallengeList } from "@/components/challenges/challenge-list";
 import { CreateChallengeTrigger } from "@/components/challenges/create-challenge-trigger";
-import { respondToChallenge, cancelChallenge } from "./actions";
+import { respondToChallenge, cancelChallenge, resolveChallenge } from "./actions";
+import { resolveExpiredChallenges } from "@/lib/challenges";
 import type { Profile } from "@/lib/types/database";
 
 export default async function ChallengesPage() {
+  // Resolve any expired challenges before fetching
+  await resolveExpiredChallenges();
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -35,7 +39,7 @@ export default async function ChallengesPage() {
   );
   const active = all.filter((c) => c.status === "accepted");
   const history = all.filter(
-    (c) => c.status === "completed" || c.status === "declined" || c.status === "cancelled"
+    (c) => c.status === "completed" || c.status === "declined" || c.status === "cancelled" || c.status === "expired"
   );
 
   return (
@@ -71,6 +75,7 @@ export default async function ChallengesPage() {
             currentUserId={userId}
             respondAction={respondToChallenge}
             cancelAction={cancelChallenge}
+            resolveAction={resolveChallenge}
           />
         </TabsContent>
 
@@ -81,6 +86,7 @@ export default async function ChallengesPage() {
             currentUserId={userId}
             respondAction={respondToChallenge}
             cancelAction={cancelChallenge}
+            resolveAction={resolveChallenge}
           />
         </TabsContent>
 
@@ -91,6 +97,7 @@ export default async function ChallengesPage() {
             currentUserId={userId}
             respondAction={respondToChallenge}
             cancelAction={cancelChallenge}
+            resolveAction={resolveChallenge}
           />
         </TabsContent>
 

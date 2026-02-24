@@ -21,6 +21,7 @@ export async function createChallenge(formData: FormData): Promise<{ error?: str
     return { error: error.message };
   }
 
+  revalidatePath("/");
   revalidatePath("/challenges");
   revalidatePath("/dashboard");
   return {};
@@ -32,18 +33,27 @@ export async function respondToChallenge(formData: FormData) {
   const challengeId = formData.get("challenge_id") as string;
   const response = formData.get("response") as "accepted" | "declined";
 
+  const updateData: Record<string, string> = {
+    status: response,
+    responded_at: new Date().toISOString(),
+  };
+
+  // When accepting, set 48h expiration timer
+  if (response === "accepted") {
+    const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
+    updateData.expires_at = expiresAt.toISOString();
+  }
+
   const { error } = await supabase
     .from("challenges")
-    .update({
-      status: response,
-      responded_at: new Date().toISOString(),
-    })
+    .update(updateData)
     .eq("id", challengeId);
 
   if (error) {
     redirect(`/challenges?error=${encodeURIComponent(error.message)}`);
   }
 
+  revalidatePath("/");
   revalidatePath("/challenges");
   revalidatePath("/dashboard");
 }
@@ -64,6 +74,35 @@ export async function cancelChallenge(formData: FormData) {
     redirect(`/challenges?error=${encodeURIComponent(error.message)}`);
   }
 
+  revalidatePath("/");
+  revalidatePath("/challenges");
+  revalidatePath("/dashboard");
+}
+
+export async function resolveChallenge(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const challengeId = formData.get("challenge_id") as string;
+  const result = formData.get("result") as "won" | "lost";
+
+  const { error } = await supabase.rpc("resolve_challenge", {
+    p_challenge_id: challengeId,
+    p_reporter_id: user.id,
+    p_reporter_won: result === "won",
+  });
+
+  if (error) {
+    redirect(`/challenges?error=${encodeURIComponent(error.message)}`);
+  }
+
+  revalidatePath("/");
   revalidatePath("/challenges");
   revalidatePath("/dashboard");
 }
