@@ -8,6 +8,7 @@ import { CreateChallengeTrigger } from "@/components/challenges/create-challenge
 import { NavCards } from "@/components/layout/nav-cards";
 import { TierBadge } from "@/components/shared/tier-badge";
 import { SeasonTag } from "@/components/seasons/season-badge";
+import { SeasonBanner } from "@/components/seasons/season-banner";
 import {
   respondToChallenge,
   cancelChallenge,
@@ -105,6 +106,9 @@ export default async function DashboardPage() {
           Welcome back, {profile?.display_name || user?.email}
         </p>
       </div>
+
+      {/* Season banner */}
+      {activeSeason && <SeasonBanner season={activeSeason as Season} />}
 
       {/* Navigation cards */}
       <NavCards pendingMatchCount={pendingMatchCount} />

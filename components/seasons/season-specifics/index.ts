@@ -23,6 +23,26 @@ export async function getSeasonHero(
   }
 }
 
+// Season banner components registry (compact variant for dashboard)
+const seasonBanners: Record<string, () => Promise<{ default: ComponentType }>> = {
+  "s00-origins": () => import("./s00-origins/banner"),
+  // Add future seasons here
+};
+
+export async function getSeasonBanner(
+  slug: string
+): Promise<ComponentType | null> {
+  const loader = seasonBanners[slug];
+  if (!loader) return null;
+
+  try {
+    const bannerModule = await loader();
+    return bannerModule.default;
+  } catch {
+    return null;
+  }
+}
+
 // Season medal assets registry
 // Each season can have custom medal SVGs
 export interface SeasonMedalAssets {
