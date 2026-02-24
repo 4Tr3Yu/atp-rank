@@ -21,12 +21,12 @@ create index idx_challenges_expires_at
   where status = 'accepted';
 
 -- ============================================
--- RLS: Make accepted challenges publicly visible
+-- RLS: Make pending and accepted challenges publicly visible
 -- ============================================
 
-create policy "Anyone can view accepted challenges"
+create policy "Anyone can view pending and accepted challenges"
   on public.challenges for select
-  using (status = 'accepted');
+  using (status in ('pending', 'accepted'));
 
 -- ============================================
 -- RPC: resolve_challenge
