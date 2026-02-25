@@ -17,6 +17,7 @@ bun dev          # Start dev server (localhost:3000)
 bun run build    # Production build
 bun run start    # Start production server
 bun run lint     # ESLint (v9, next core-web-vitals + typescript configs)
+bun test         # Run unit tests (Bun test runner)
 ```
 
 ## Architecture
@@ -72,6 +73,7 @@ components/shared/     — Player select, empty state, skeletons
 ```
 NEXT_PUBLIC_SUPABASE_URL=                       # Supabase project URL
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=   # Supabase publishable key
+TEAMS_WEBHOOK_URL=                              # Microsoft Teams incoming webhook URL for challenge notifications
 ```
 
 ## Conventions
