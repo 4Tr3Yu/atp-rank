@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { sendChallengeNotification } from "@/lib/notifications";
 
 export async function createChallenge(formData: FormData): Promise<{ error?: string }> {
   const supabase = await createClient();
@@ -19,6 +20,34 @@ export async function createChallenge(formData: FormData): Promise<{ error?: str
 
   if (error) {
     return { error: error.message };
+  }
+
+  // Fire-and-forget: notify Teams channel about the new challenge
+  const [challengerProfile, challengedProfile] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("display_name, username, elo_rating")
+      .eq("id", challengerId)
+      .single(),
+    supabase
+      .from("profiles")
+      .select("display_name, username, elo_rating")
+      .eq("id", challengedId)
+      .single(),
+  ]);
+
+  if (challengerProfile.data && challengedProfile.data) {
+    sendChallengeNotification({
+      challengerName:
+        challengerProfile.data.display_name ||
+        challengerProfile.data.username,
+      challengedName:
+        challengedProfile.data.display_name ||
+        challengedProfile.data.username,
+      challengerElo: challengerProfile.data.elo_rating,
+      challengedElo: challengedProfile.data.elo_rating,
+      message,
+    });
   }
 
   revalidatePath("/");
