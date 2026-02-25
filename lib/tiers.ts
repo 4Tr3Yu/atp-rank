@@ -98,3 +98,58 @@ export function getTier(eloRating: number): Tier {
   }
   return tiers[tiers.length - 1];
 }
+
+// ============================================
+// SUBDIVISIONS
+// ============================================
+
+export type Subdivision = "I" | "II" | "III" | "IV";
+
+export type TierWithDivision = Tier & {
+  division: Subdivision;
+  fullName: string;
+};
+
+/**
+ * Get tier with subdivision (IV → I) for a given Elo rating.
+ * Each tier's range is split into 4 equal parts.
+ */
+export function getTierWithDivision(eloRating: number): TierWithDivision {
+  const tier = getTier(eloRating);
+  const tierIndex = tiers.indexOf(tier);
+
+  // Get the ceiling for this tier (next tier's minElo, or Infinity for top tier)
+  const ceiling = tierIndex > 0 ? tiers[tierIndex - 1].minElo : Infinity;
+  const floor = tier.minElo;
+  const range = ceiling - floor;
+
+  // For the top tier (unbounded), use 200-point range for subdivisions
+  const effectiveRange = range === Infinity ? 200 : range;
+  const step = effectiveRange / 4;
+
+  const eloInTier = eloRating - floor;
+
+  let division: Subdivision;
+  if (eloInTier >= step * 3) {
+    division = "I";
+  } else if (eloInTier >= step * 2) {
+    division = "II";
+  } else if (eloInTier >= step) {
+    division = "III";
+  } else {
+    division = "IV";
+  }
+
+  return {
+    ...tier,
+    division,
+    fullName: `${tier.name} ${division}`,
+  };
+}
+
+/**
+ * Look up a tier by name (for reconstructing from stored data).
+ */
+export function getTierByName(name: string): Tier | null {
+  return tiers.find((t) => t.name === name) ?? null;
+}

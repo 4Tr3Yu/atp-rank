@@ -8,7 +8,13 @@ import {
 import { LeaderboardRow } from "./leaderboard-row";
 import type { Profile } from "@/lib/types/database";
 
-export function LeaderboardTable({ profiles }: { profiles: Profile[] }) {
+export function LeaderboardTable({
+  profiles,
+  tierFinishes,
+}: {
+  profiles: Profile[];
+  tierFinishes?: Map<string, number>;
+}) {
   if (profiles.length === 0) {
     return (
       <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">
@@ -35,6 +41,7 @@ export function LeaderboardTable({ profiles }: { profiles: Profile[] }) {
               key={profile.id}
               profile={profile}
               rank={index + 1}
+              seasonFinishElo={tierFinishes?.get(profile.id)}
             />
           ))}
         </TableBody>

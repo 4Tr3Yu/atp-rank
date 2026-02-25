@@ -6,7 +6,8 @@ import { StatsGrid } from "@/components/profile/stats-grid";
 import { EloChart } from "@/components/profile/elo-chart";
 import { MatchList } from "@/components/matches/match-list";
 import { PlayerMedals } from "@/components/seasons/player-medals";
-import type { Profile, Season, SeasonWinner } from "@/lib/types/database";
+import { PlayerTierHistory } from "@/components/seasons/player-tier-history";
+import type { Profile, Season, SeasonWinner, SeasonTierFinish } from "@/lib/types/database";
 
 export default async function PlayerProfilePage({
   params,
@@ -51,6 +52,19 @@ export default async function PlayerProfilePage({
     .eq("player_id", id)
     .order("awarded_at", { ascending: false });
 
+  // Fetch player's tier finishes
+  const { data: tierFinishes } = await supabase
+    .from("season_tier_finishes")
+    .select(`
+      *,
+      season:seasons(id, name, slug)
+    `)
+    .eq("player_id", id)
+    .order("awarded_at", { ascending: false });
+
+  // Most recent tier finish for avatar ring
+  const mostRecentFinishElo = tierFinishes?.[0]?.final_elo;
+
   // Build profile map for match cards
   const { data: profiles } = await supabase.from("profiles").select("*");
   const profileMap = new Map<string, Profile>();
@@ -63,12 +77,18 @@ export default async function PlayerProfilePage({
     SeasonWinner & { season: Pick<Season, "id" | "name" | "slug"> }
   >;
 
+  // Type the tier finishes properly
+  const typedTierFinishes = (tierFinishes || []) as Array<
+    SeasonTierFinish & { season: Pick<Season, "name" | "slug"> }
+  >;
+
   return (
     <div className="space-y-6">
       <BackButton />
-      <PlayerCard profile={profile} rank={rank} />
+      <PlayerCard profile={profile} rank={rank} seasonFinishElo={mostRecentFinishElo} />
       <StatsGrid profile={profile} matches={matches || []} />
       {typedMedals.length > 0 && <PlayerMedals medals={typedMedals} />}
+      {typedTierFinishes.length > 0 && <PlayerTierHistory tierFinishes={typedTierFinishes} />}
       <EloChart matches={matches || []} playerId={id} />
       <div>
         <h2 className="mb-3 text-lg font-semibold">Match History</h2>

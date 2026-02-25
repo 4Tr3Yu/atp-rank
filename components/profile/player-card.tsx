@@ -1,14 +1,16 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { TierBadge } from "@/components/shared/tier-badge";
+import { TieredAvatar } from "@/components/shared/tiered-avatar";
 import type { Profile } from "@/lib/types/database";
 
 export function PlayerCard({
   profile,
   rank,
+  seasonFinishElo,
 }: {
   profile: Profile;
   rank: number;
+  seasonFinishElo?: number;
 }) {
   const initials = (profile.display_name || profile.username)
     .slice(0, 2)
@@ -20,18 +22,18 @@ export function PlayerCard({
 
   return (
     <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-6">
-      <Avatar className="h-16 w-16">
-        <AvatarFallback className="bg-primary/10 text-primary text-lg font-bold">
-          {initials}
-        </AvatarFallback>
-      </Avatar>
+      <TieredAvatar
+        initials={initials}
+        seasonFinishElo={seasonFinishElo}
+        size="lg"
+      />
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <h2 className="text-xl font-bold">
             {profile.display_name || profile.username}
           </h2>
           <Badge variant="outline">#{rank}</Badge>
-          <TierBadge eloRating={profile.elo_rating} size="sm" />
+          <TierBadge eloRating={profile.elo_rating} showLabel />
         </div>
         <p className="text-sm text-muted-foreground">@{profile.username}</p>
         <div className="flex items-center gap-4 text-sm">

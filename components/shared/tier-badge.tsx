@@ -1,4 +1,4 @@
-import { getTier } from "@/lib/tiers";
+import { getTierWithDivision } from "@/lib/tiers";
 import { TierGem } from "@/components/shared/tier-gem";
 import { cn } from "@/lib/utils";
 
@@ -10,22 +10,16 @@ export function TierBadge({
   size?: "xs" | "sm" | "md";
   showLabel?: boolean;
 }) {
-  const tier = getTier(eloRating);
-
-  const gemSizes = {
-    xs: 10,
-    sm: 14,
-    md: 24,
-  };
+  const tier = getTierWithDivision(eloRating);
 
   return (
     <span className={cn(
       "inline-flex items-center gap-1 font-medium",
       tier.color,
     )}>
-      <TierGem tier={tier} size={gemSizes['md']} />
+      <TierGem tier={tier} size={24} division={tier.division} />
       <span>
-        {showLabel && tier.name}
+        {showLabel && tier.fullName}
       </span>
     </span>
   );

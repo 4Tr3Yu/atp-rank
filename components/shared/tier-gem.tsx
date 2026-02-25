@@ -1,16 +1,19 @@
-import type { Tier } from "@/lib/tiers";
+import type { Tier, Subdivision } from "@/lib/tiers";
 
 /**
  * Octagonal gem SVG that takes tier colors dynamically.
  * Faceted design with highlight and shadow to give depth.
+ * Optional division overlay renders a Roman numeral centered on the gem.
  */
 export function TierGem({
   tier,
   size = 16,
+  division,
   className,
 }: {
   tier: Tier;
   size?: number;
+  division?: Subdivision;
   className?: string;
 }) {
   return (
@@ -67,6 +70,37 @@ export function TierGem({
       />
       {/* Sparkle on top-left */}
       <circle cx="7" cy="6" r="1" fill="white" opacity="0.5" />
+      {/* Division numeral */}
+      {division && (
+        <>
+          <text
+            x="12"
+            y="13.5"
+            textAnchor="middle"
+            dominantBaseline="central"
+            fill={tier.gemShadow}
+            fontSize="9"
+            fontWeight="bold"
+            fontFamily="serif"
+            opacity="0.6"
+          >
+            {division}
+          </text>
+          <text
+            x="12"
+            y="13"
+            textAnchor="middle"
+            dominantBaseline="central"
+            fill="white"
+            fontSize="9"
+            fontWeight="bold"
+            fontFamily="serif"
+            opacity="0.9"
+          >
+            {division}
+          </text>
+        </>
+      )}
     </svg>
   );
 }

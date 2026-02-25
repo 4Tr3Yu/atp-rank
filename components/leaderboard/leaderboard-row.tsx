@@ -1,16 +1,18 @@
 import Link from "next/link";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { RankBadge } from "./rank-badge";
+import { TieredAvatar } from "@/components/shared/tiered-avatar";
 import { TierBadge } from "@/components/shared/tier-badge";
 import type { Profile } from "@/lib/types/database";
 
 export function LeaderboardRow({
   profile,
   rank,
+  seasonFinishElo,
 }: {
   profile: Profile;
   rank: number;
+  seasonFinishElo?: number;
 }) {
   const totalMatches = profile.wins + profile.losses;
   const winRate = totalMatches > 0
@@ -30,12 +32,11 @@ export function LeaderboardRow({
           href={`/player/${profile.id}`}
           className="flex items-center gap-3 hover:opacity-80 transition-opacity"
         >
-          {/* <Avatar className="h-8 w-8">
-            <AvatarFallback className="bg-primary/10 text-primary text-xs">
-              {initials}
-            </AvatarFallback>
-          </Avatar> */}
-          <TierBadge eloRating={profile.elo_rating} />
+          <TieredAvatar
+            initials={initials}
+            seasonFinishElo={seasonFinishElo}
+            size="sm"
+          />
 
           <div>
             <p className="font-medium leading-none">
@@ -48,6 +49,7 @@ export function LeaderboardRow({
       <TableCell className="text-right">
         <div className="flex items-center justify-end gap-2">
           <span className="font-bold text-primary tabular-nums">{profile.elo_rating}</span>
+          <TierBadge eloRating={profile.elo_rating} />
         </div>
       </TableCell>
       <TableCell className="text-right tabular-nums">

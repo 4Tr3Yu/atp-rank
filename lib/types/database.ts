@@ -107,6 +107,14 @@ export interface Season {
   created_by: string | null;
 }
 
+export interface SeasonTierFinish {
+  id: string;
+  season_id: string;
+  player_id: string;
+  final_elo: number;
+  awarded_at: string;
+}
+
 export type MedalType = "gold" | "silver" | "bronze" | "mvp";
 
 export interface SeasonWinner {

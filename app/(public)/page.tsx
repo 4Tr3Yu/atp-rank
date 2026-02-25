@@ -28,6 +28,27 @@ export default async function HomePage() {
     .order("played_at", { ascending: false })
     .limit(5);
 
+  // Fetch most recent completed season's tier finishes
+  const { data: lastCompletedSeason } = await supabase
+    .from("seasons")
+    .select("id")
+    .eq("status", "completed")
+    .order("ends_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  const tierFinishes = new Map<string, number>();
+  if (lastCompletedSeason) {
+    const { data: finishes } = await supabase
+      .from("season_tier_finishes")
+      .select("player_id, final_elo")
+      .eq("season_id", lastCompletedSeason.id);
+
+    for (const f of finishes || []) {
+      tierFinishes.set(f.player_id, f.final_elo);
+    }
+  }
+
   // Profile map for match display
   const profileMap = new Map<string, Profile>();
   for (const p of profiles || []) {
@@ -49,7 +70,7 @@ export default async function HomePage() {
               )}
             </div>
           </div>
-          <LeaderboardTable profiles={profiles || []} />
+          <LeaderboardTable profiles={profiles || []} tierFinishes={tierFinishes} />
         </div>
 
         <div className="lg:col-span-1">
