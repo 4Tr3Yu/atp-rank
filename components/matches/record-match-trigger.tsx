@@ -25,7 +25,7 @@ export async function RecordMatchTrigger() {
     >
       <Button size="sm" className="gap-1.5">
         <Plus className="h-4 w-4" />
-        <span className="hidden sm:inline">Record Match</span>
+        Record Match
       </Button>
     </RecordMatchModal>
   );

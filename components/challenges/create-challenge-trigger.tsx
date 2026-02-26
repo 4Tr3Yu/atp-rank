@@ -8,7 +8,7 @@ export async function CreateChallengeTrigger({
   variant = "outline",
   showLabel = true,
 }: {
-  variant?: "default" | "outline" | "ghost";
+  variant?: "default" | "outline" | "ghost" | "inverted";
   showLabel?: boolean;
 }) {
   const supabase = await createClient();
@@ -31,7 +31,7 @@ export async function CreateChallengeTrigger({
     >
       <Button size="sm" variant={variant} className="gap-1.5">
         <Swords className="h-4 w-4" />
-        {showLabel && <span className="hidden sm:inline">Challenge</span>}
+        {showLabel && "Challenge"}
       </Button>
     </CreateChallengeModal>
   );

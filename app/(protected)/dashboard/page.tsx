@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { MatchList } from "@/components/matches/match-list";
+import { AwaitingConfirmationList } from "@/components/matches/awaiting-confirmation-list";
 import { ChallengeList } from "@/components/challenges/challenge-list";
 import { RecordMatchTrigger } from "@/components/matches/record-match-trigger";
 import { CreateChallengeTrigger } from "@/components/challenges/create-challenge-trigger";
@@ -68,6 +69,14 @@ export default async function DashboardPage() {
 
   const pendingMatchCount = (pendingMatches || []).length;
 
+  // Matches recorded by user awaiting opponent confirmation
+  const { data: awaitingConfirmation } = await supabase
+    .from("matches")
+    .select("*")
+    .eq("status", "pending")
+    .eq("recorded_by", user!.id)
+    .order("played_at", { ascending: false });
+
   // Pending challenges received
   const { data: pendingChallenges } = await supabase
     .from("challenges")
@@ -113,60 +122,84 @@ export default async function DashboardPage() {
       {/* Navigation cards */}
       <NavCards pendingMatchCount={pendingMatchCount} />
 
-      {/* Quick stats */}
+      {/* Quick actions */}
       <div>
-        <h2 className="mb-3 text-lg font-semibold">Stats</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Card>
-          <CardContent className="p-4 text-center space-y-1">
-            <p className="text-2xl font-bold text-primary tabular-nums">
-              {profile?.elo_rating || 1200}
-            </p>
-            <TierBadge eloRating={profile?.elo_rating || 1200} showLabel />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold tabular-nums">
-              #{rank || "-"}{" "}
-              <span className="text-sm font-normal text-muted-foreground">
-                / {totalPlayers}
-              </span>
-            </p>
-            <p className="text-xs text-muted-foreground">Rank</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold tabular-nums">
-              <span className="text-green-400">{profile?.wins || 0}</span>
-              {" / "}
-              <span className="text-red-400">{profile?.losses || 0}</span>
-            </p>
-            <p className="text-xs text-muted-foreground">Season W / L</p>
-            <p className="text-xs text-muted-foreground/70">
-              All-time: {totalWins}-{totalLosses}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold tabular-nums">
-              {(profile?.wins || 0) + (profile?.losses || 0)}
-            </p>
-            <p className="text-xs text-muted-foreground">Season Matches</p>
-            <p className="text-xs text-muted-foreground/70">
-              All-time: {totalWins + totalLosses}
-            </p>
-          </CardContent>
-        </Card>
+        <h2 className="mb-3 text-lg font-semibold">Quick Actions</h2>
+        <div className="flex flex-wrap gap-3">
+          <RecordMatchTrigger />
+          <CreateChallengeTrigger variant="inverted" />
         </div>
       </div>
 
-      {/* Quick actions */}
-      <div className="flex flex-wrap gap-3">
-        <RecordMatchTrigger />
-        <CreateChallengeTrigger variant="outline" />
+      {/* Stats and Awaiting Confirmation - 2 columns on desktop */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Quick stats */}
+        <div className="lg:col-span-2">
+          <h2 className="mb-3 text-lg font-semibold">Stats</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <Card>
+              <CardContent className="p-4 text-center space-y-1">
+                <p className="text-2xl font-bold text-primary tabular-nums">
+                  {profile?.elo_rating || 1200}
+                </p>
+                <TierBadge eloRating={profile?.elo_rating || 1200} showLabel />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 text-center">
+                <p className="text-2xl font-bold tabular-nums">
+                  #{rank || "-"}{" "}
+                  <span className="text-sm font-normal text-muted-foreground">
+                    / {totalPlayers}
+                  </span>
+                </p>
+                <p className="text-xs text-muted-foreground">Rank</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 text-center">
+                <p className="text-2xl font-bold tabular-nums">
+                  <span className="text-green-400">{profile?.wins || 0}</span>
+                  {" / "}
+                  <span className="text-red-400">{profile?.losses || 0}</span>
+                </p>
+                <p className="text-xs text-muted-foreground">Season W / L</p>
+                <p className="text-xs text-muted-foreground/70">
+                  All-time: {totalWins}-{totalLosses}
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 text-center">
+                <p className="text-2xl font-bold tabular-nums">
+                  {(profile?.wins || 0) + (profile?.losses || 0)}
+                </p>
+                <p className="text-xs text-muted-foreground">Season Matches</p>
+                <p className="text-xs text-muted-foreground/70">
+                  All-time: {totalWins + totalLosses}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Matches awaiting opponent confirmation */}
+        <div>
+          <h2 className="mb-3 text-lg font-semibold">Awaiting Confirmation</h2>
+          {(awaitingConfirmation || []).length > 0 ? (
+            <AwaitingConfirmationList
+              matches={awaitingConfirmation || []}
+              profiles={profileMap}
+              currentUserId={user!.id}
+            />
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center text-muted-foreground">
+                No matches awaiting confirmation
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
 
       {/* Active challenges */}
