@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChallengeList } from "@/components/challenges/challenge-list";
 import { CreateChallengeTrigger } from "@/components/challenges/create-challenge-trigger";
+import { BackButton } from "@/components/shared/back-button";
 import { respondToChallenge, cancelChallenge, resolveChallenge } from "./actions";
 import { resolveExpiredChallenges } from "@/lib/challenges";
 import type { Profile } from "@/lib/types/database";
@@ -44,6 +45,7 @@ export default async function ChallengesPage() {
 
   return (
     <div className="space-y-6">
+      <BackButton />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Challenges</h1>
