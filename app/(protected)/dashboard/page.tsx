@@ -141,43 +141,43 @@ export default async function DashboardPage() {
           <h2 className="mb-3 text-lg font-semibold">Stats</h2>
           <div className="grid grid-cols-2 gap-3">
             <Card>
-              <CardContent className="p-4 text-center space-y-1">
-                <p className="text-2xl font-bold text-primary tabular-nums">
+              <CardContent className="p-6 text-center space-y-1">
+                <p className="text-4xl font-bold text-primary tabular-nums">
                   {profile?.elo_rating || 1200}
                 </p>
                 <TierBadge eloRating={profile?.elo_rating || 1200} showLabel />
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-4 text-center">
-                <p className="text-2xl font-bold tabular-nums">
+              <CardContent className="p-6 text-center">
+                <p className="text-4xl font-bold tabular-nums">
                   #{rank || "-"}{" "}
-                  <span className="text-sm font-normal text-muted-foreground">
+                  <span className="text-lg font-normal text-muted-foreground">
                     / {totalPlayers}
                   </span>
                 </p>
-                <p className="text-xs text-muted-foreground">Rank</p>
+                <p className="text-sm text-muted-foreground">Rank</p>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-4 text-center">
-                <p className="text-2xl font-bold tabular-nums">
+              <CardContent className="p-6 text-center">
+                <p className="text-4xl font-bold tabular-nums">
                   <span className="text-green-400">{profile?.wins || 0}</span>
                   {" / "}
                   <span className="text-red-400">{profile?.losses || 0}</span>
                 </p>
-                <p className="text-xs text-muted-foreground">Season W / L</p>
+                <p className="text-sm text-muted-foreground">Season W / L</p>
                 <p className="text-xs text-muted-foreground/70">
                   All-time: {totalWins}-{totalLosses}
                 </p>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-4 text-center">
-                <p className="text-2xl font-bold tabular-nums">
+              <CardContent className="p-6 text-center">
+                <p className="text-4xl font-bold tabular-nums">
                   {(profile?.wins || 0) + (profile?.losses || 0)}
                 </p>
-                <p className="text-xs text-muted-foreground">Season Matches</p>
+                <p className="text-sm text-muted-foreground">Season Matches</p>
                 <p className="text-xs text-muted-foreground/70">
                   All-time: {totalWins + totalLosses}
                 </p>
