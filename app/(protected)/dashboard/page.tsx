@@ -8,7 +8,6 @@ import { RecordMatchTrigger } from "@/components/matches/record-match-trigger";
 import { CreateChallengeTrigger } from "@/components/challenges/create-challenge-trigger";
 import { NavCards } from "@/components/layout/nav-cards";
 import { TierBadge } from "@/components/shared/tier-badge";
-import { SeasonTag } from "@/components/seasons/season-badge";
 import { SeasonBanner } from "@/components/seasons/season-banner";
 import {
   respondToChallenge,
@@ -106,18 +105,22 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <div className="flex items-center gap-3 mb-1">
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          {activeSeason && <SeasonTag season={activeSeason as Season} />}
-        </div>
-        <p className="text-muted-foreground">
-          Welcome back, {profile?.display_name || user?.email}
-        </p>
-      </div>
 
-      {/* Season banner */}
-      {activeSeason && <SeasonBanner season={activeSeason as Season} />}
+      <header className="flex justify-between">
+        <div>
+            <h1 className="text-3xl font-bold tracking-tight mb-1">Dashboard</h1>
+            <p className="text-muted-foreground">
+              Welcome back, {profile?.display_name || user?.email}
+            </p>
+        </div>
+        {/* Season banner */}
+        <div className="hidden sm:block">
+          {activeSeason && <SeasonBanner season={activeSeason as Season} />}      
+        </div>
+      </header>
+        <div className="sm:hidden">
+        {activeSeason && <SeasonBanner season={activeSeason as Season} />}      
+      </div>
 
       {/* Navigation cards */}
       <NavCards pendingMatchCount={pendingMatchCount} />

@@ -1,4 +1,9 @@
 import type { ComponentType } from "react";
+import type { Season } from "@/lib/types/database";
+
+export interface SeasonBannerProps {
+  season: Season;
+}
 
 // Season hero components registry
 // Add new seasons here as they are created
@@ -24,14 +29,14 @@ export async function getSeasonHero(
 }
 
 // Season banner components registry (compact variant for dashboard)
-const seasonBanners: Record<string, () => Promise<{ default: ComponentType }>> = {
+const seasonBanners: Record<string, () => Promise<{ default: ComponentType<SeasonBannerProps> }>> = {
   "s00-origins": () => import("./s00-origins/banner"),
   // Add future seasons here
 };
 
 export async function getSeasonBanner(
   slug: string
-): Promise<ComponentType | null> {
+): Promise<ComponentType<SeasonBannerProps> | null> {
   const loader = seasonBanners[slug];
   if (!loader) return null;
 
