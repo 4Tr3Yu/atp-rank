@@ -229,6 +229,11 @@ export async function recordTournamentMatch(formData: FormData) {
         .from("tournaments")
         .update({ status: "completed", completed_at: new Date().toISOString() })
         .eq("id", tournamentId);
+
+      // Award Elo bonuses based on tournament placement
+      await supabase.rpc("award_tournament_points", {
+        p_tournament_id: tournamentId,
+      });
     }
   }
 

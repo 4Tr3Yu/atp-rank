@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useFormAction } from "@/lib/loading-context";
-import type { TournamentMatch, Profile } from "@/lib/types/database";
+import type { TournamentMatch, Profile, TournamentResult } from "@/lib/types/database";
 
 function getInitials(name: string) {
   return name.slice(0, 2).toUpperCase();
@@ -15,17 +15,33 @@ function BracketMatch({
   currentUserId,
   canRecord,
   recordAction,
+  results,
 }: {
   match: TournamentMatch;
   profiles: Map<string, Profile>;
   currentUserId: string;
   canRecord: boolean;
   recordAction: (formData: FormData) => Promise<void>;
+  results?: Map<string, TournamentResult>;
 }) {
   const handleRecord = useFormAction(recordAction);
   const player1 = match.player1_id ? profiles.get(match.player1_id) : null;
   const player2 = match.player2_id ? profiles.get(match.player2_id) : null;
   const isReady = player1 && player2 && !match.winner_id;
+
+  const p1Result = match.player1_id ? results?.get(match.player1_id) : undefined;
+  const p2Result = match.player2_id ? results?.get(match.player2_id) : undefined;
+
+  // Show Elo bonus for the loser of this match (this is where they were eliminated)
+  // or for the winner if this is the final (champion bonus)
+  const p1IsLoser = match.winner_id && match.winner_id !== match.player1_id;
+  const p2IsLoser = match.winner_id && match.winner_id !== match.player2_id;
+
+  const showP1Bonus = p1IsLoser && p1Result && p1Result.elo_bonus > 0;
+  const showP2Bonus = p2IsLoser && p2Result && p2Result.elo_bonus > 0;
+  // Show champion bonus on the final match winner
+  const showP1ChampionBonus = match.winner_id === match.player1_id && p1Result?.position_label === "Champion";
+  const showP2ChampionBonus = match.winner_id === match.player2_id && p2Result?.position_label === "Champion";
 
   return (
     <div className="rounded-lg border border-border bg-card p-2 w-48 shrink-0">
@@ -41,7 +57,7 @@ function BracketMatch({
       >
         {player1 ? (
           <>
-            <Avatar className="h-5 w-5">
+            <Avatar className="h-5 w-5 shrink-0">
               <AvatarFallback className="text-[10px]">
                 {getInitials(player1.display_name || player1.username)}
               </AvatarFallback>
@@ -49,6 +65,11 @@ function BracketMatch({
             <span className="truncate font-medium text-xs">
               {player1.display_name || player1.username}
             </span>
+            {(showP1Bonus || showP1ChampionBonus) && (
+              <span className="ml-auto text-[10px] font-semibold text-green-400 shrink-0">
+                +{p1Result!.elo_bonus}
+              </span>
+            )}
           </>
         ) : (
           <span className="text-xs text-muted-foreground">TBD</span>
@@ -69,7 +90,7 @@ function BracketMatch({
       >
         {player2 ? (
           <>
-            <Avatar className="h-5 w-5">
+            <Avatar className="h-5 w-5 shrink-0">
               <AvatarFallback className="text-[10px]">
                 {getInitials(player2.display_name || player2.username)}
               </AvatarFallback>
@@ -77,6 +98,11 @@ function BracketMatch({
             <span className="truncate font-medium text-xs">
               {player2.display_name || player2.username}
             </span>
+            {(showP2Bonus || showP2ChampionBonus) && (
+              <span className="ml-auto text-[10px] font-semibold text-green-400 shrink-0">
+                +{p2Result!.elo_bonus}
+              </span>
+            )}
           </>
         ) : (
           <span className="text-xs text-muted-foreground">TBD</span>
@@ -126,12 +152,14 @@ export function BracketView({
   currentUserId,
   isCreator,
   recordAction,
+  results,
 }: {
   matches: TournamentMatch[];
   profiles: Map<string, Profile>;
   currentUserId: string;
   isCreator: boolean;
   recordAction: (formData: FormData) => Promise<void>;
+  results?: Map<string, TournamentResult>;
 }) {
   if (matches.length === 0) {
     return (
@@ -183,6 +211,7 @@ export function BracketView({
                   currentUserId={currentUserId}
                   canRecord={isCreator}
                   recordAction={recordAction}
+                  results={results}
                 />
               ))}
             </div>
