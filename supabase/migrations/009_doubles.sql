@@ -273,8 +273,6 @@ declare
   v_expected float;
   v_change integer;
   -- doubles vars
-  v_players record[];
-  v_player record;
   v_team_winner_elo integer;
   v_team_loser_elo integer;
   v_team_change integer;
