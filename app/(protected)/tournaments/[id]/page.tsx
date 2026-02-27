@@ -13,7 +13,7 @@ import {
   startTournament,
   recordTournamentMatch,
 } from "../actions";
-import type { Profile } from "@/lib/types/database";
+import type { Profile, TournamentResult } from "@/lib/types/database";
 
 const statusColors: Record<string, string> = {
   draft: "bg-muted text-muted-foreground border-border",
@@ -69,6 +69,20 @@ export default async function TournamentDetailPage({
   const profileMap = new Map<string, Profile>();
   for (const p of profiles || []) {
     profileMap.set(p.id, p);
+  }
+
+  // Tournament results (placement + Elo bonus) for completed tournaments
+  let tournamentResults: TournamentResult[] = [];
+  if (tournament.status === "completed") {
+    const { data } = await supabase
+      .from("tournament_results")
+      .select("*")
+      .eq("tournament_id", id);
+    tournamentResults = data || [];
+  }
+  const resultsMap = new Map<string, TournamentResult>();
+  for (const r of tournamentResults) {
+    resultsMap.set(r.player_id, r);
   }
 
   const isCreator = user!.id === tournament.created_by;
@@ -212,7 +226,64 @@ export default async function TournamentDetailPage({
             isCreator={isCreator}
             matchType={tournament.match_type}
             recordAction={recordTournamentMatch}
+            results={resultsMap}
           />
+        </div>
+      )}
+
+      {/* Tournament Results Summary */}
+      {tournament.status === "completed" && tournamentResults.length > 0 && (
+        <div>
+          <h2 className="mb-3 text-lg font-semibold">Results</h2>
+          <div className="rounded-xl border border-border bg-card overflow-hidden">
+            {tournamentResults
+              .sort((a, b) => b.elo_bonus - a.elo_bonus)
+              .map((result, i) => {
+                const profile = profileMap.get(result.player_id);
+                if (!profile) return null;
+                const initials = (profile.display_name || profile.username)
+                  .slice(0, 2)
+                  .toUpperCase();
+                return (
+                  <div
+                    key={result.id}
+                    className={`flex items-center justify-between px-4 py-3 ${
+                      i > 0 ? "border-t border-border" : ""
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-medium text-muted-foreground w-6 text-center">
+                        {result.position_label === "Champion"
+                          ? "🥇"
+                          : result.position_label === "Runner-up"
+                            ? "🥈"
+                            : result.position_label === "Semifinalist"
+                              ? "🥉"
+                              : `${i + 1}.`}
+                      </span>
+                      <Avatar className="h-7 w-7">
+                        <AvatarFallback className="text-[10px] bg-primary/10 text-primary">
+                          {initials}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium">
+                          {profile.display_name || profile.username}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {result.position_label}
+                        </p>
+                      </div>
+                    </div>
+                    {result.elo_bonus > 0 && (
+                      <span className="text-sm font-semibold text-green-400">
+                        +{result.elo_bonus} Elo
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+          </div>
         </div>
       )}
     </div>

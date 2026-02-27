@@ -14,10 +14,10 @@ function BannerSkeleton() {
   );
 }
 
-async function DynamicBanner({ slug }: { slug: string }) {
-  const BannerComponent = await getSeasonBanner(slug);
+async function DynamicBanner({ season }: { season: Season }) {
+  const BannerComponent = await getSeasonBanner(season.slug);
   if (!BannerComponent) return null;
-  return <BannerComponent />;
+  return <BannerComponent season={season} />;
 }
 
 export async function SeasonBanner({ season }: { season: Season }) {
@@ -25,7 +25,7 @@ export async function SeasonBanner({ season }: { season: Season }) {
 
   return (
     <Suspense fallback={<BannerSkeleton />}>
-      <DynamicBanner slug={season.slug} />
+      <DynamicBanner season={season} />
     </Suspense>
   );
 }

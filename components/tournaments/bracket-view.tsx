@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useFormAction } from "@/lib/loading-context";
-import type { MatchType, TournamentMatch, Profile } from "@/lib/types/database";
+import type { MatchType, TournamentMatch, Profile, TournamentResult } from "@/lib/types/database";
 
 function getInitials(name: string) {
   return name.slice(0, 2).toUpperCase();
@@ -21,6 +21,8 @@ function PlayerSlot({
   isWinner,
   isFaded,
   isDoubles,
+  showEloBonus,
+  eloBonus,
 }: {
   playerId: string | null;
   partnerId?: string | null;
@@ -28,6 +30,8 @@ function PlayerSlot({
   isWinner: boolean;
   isFaded: boolean;
   isDoubles: boolean;
+  showEloBonus?: boolean;
+  eloBonus?: number;
 }) {
   const player = playerId ? profiles.get(playerId) : null;
   const partner = partnerId ? profiles.get(partnerId) : null;
@@ -37,6 +41,12 @@ function PlayerSlot({
     : isFaded
       ? "opacity-40"
       : "";
+
+  const bonusBadge = showEloBonus && eloBonus ? (
+    <span className="ml-auto text-[10px] font-semibold text-green-400 shrink-0">
+      +{eloBonus}
+    </span>
+  ) : null;
 
   if (!player) {
     return (
@@ -48,34 +58,37 @@ function PlayerSlot({
 
   if (isDoubles && partner) {
     return (
-      <div className={`flex flex-col gap-0.5 rounded px-2 py-1 text-sm ${colorClass}`}>
-        <div className="flex items-center gap-1.5">
-          <Avatar className="h-4 w-4">
-            <AvatarFallback className="text-[8px]">
-              {getInitials(playerName(player))}
-            </AvatarFallback>
-          </Avatar>
-          <span className="truncate font-medium text-xs">
-            {playerName(player)}
-          </span>
+      <div className={`flex items-center gap-0.5 rounded px-2 py-1 text-sm ${colorClass}`}>
+        <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <Avatar className="h-4 w-4 shrink-0">
+              <AvatarFallback className="text-[8px]">
+                {getInitials(playerName(player))}
+              </AvatarFallback>
+            </Avatar>
+            <span className="truncate font-medium text-xs">
+              {playerName(player)}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Avatar className="h-4 w-4 shrink-0">
+              <AvatarFallback className="text-[8px]">
+                {getInitials(playerName(partner))}
+              </AvatarFallback>
+            </Avatar>
+            <span className="truncate font-medium text-xs">
+              {playerName(partner)}
+            </span>
+          </div>
         </div>
-        <div className="flex items-center gap-1.5">
-          <Avatar className="h-4 w-4">
-            <AvatarFallback className="text-[8px]">
-              {getInitials(playerName(partner))}
-            </AvatarFallback>
-          </Avatar>
-          <span className="truncate font-medium text-xs">
-            {playerName(partner)}
-          </span>
-        </div>
+        {bonusBadge}
       </div>
     );
   }
 
   return (
     <div className={`flex items-center gap-2 rounded px-2 py-1.5 text-sm ${colorClass}`}>
-      <Avatar className="h-5 w-5">
+      <Avatar className="h-5 w-5 shrink-0">
         <AvatarFallback className="text-[10px]">
           {getInitials(playerName(player))}
         </AvatarFallback>
@@ -83,6 +96,7 @@ function PlayerSlot({
       <span className="truncate font-medium text-xs">
         {playerName(player)}
       </span>
+      {bonusBadge}
     </div>
   );
 }
@@ -94,6 +108,7 @@ function BracketMatch({
   canRecord,
   isDoubles,
   recordAction,
+  results,
 }: {
   match: TournamentMatch;
   profiles: Map<string, Profile>;
@@ -101,6 +116,7 @@ function BracketMatch({
   canRecord: boolean;
   isDoubles: boolean;
   recordAction: (formData: FormData) => Promise<void>;
+  results?: Map<string, TournamentResult>;
 }) {
   const handleRecord = useFormAction(recordAction);
   const player1 = match.player1_id ? profiles.get(match.player1_id) : null;
@@ -119,6 +135,19 @@ function BracketMatch({
       ? `${(playerName(player2)).split(" ")[0]} wins`
       : "";
 
+  const p1Result = match.player1_id ? results?.get(match.player1_id) : undefined;
+  const p2Result = match.player2_id ? results?.get(match.player2_id) : undefined;
+
+  // Show Elo bonus for the loser of this match (this is where they were eliminated)
+  // or for the winner if this is the final (champion bonus)
+  const p1IsLoser = match.winner_id && match.winner_id !== match.player1_id;
+  const p2IsLoser = match.winner_id && match.winner_id !== match.player2_id;
+
+  const showP1Bonus = !!(p1IsLoser && p1Result && p1Result.elo_bonus > 0) ||
+    !!(match.winner_id === match.player1_id && p1Result?.position_label === "Champion");
+  const showP2Bonus = !!(p2IsLoser && p2Result && p2Result.elo_bonus > 0) ||
+    !!(match.winner_id === match.player2_id && p2Result?.position_label === "Champion");
+
   return (
     <div className={`rounded-lg border border-border bg-card p-2 ${isDoubles ? "w-56" : "w-48"} shrink-0`}>
       {/* Slot 1 */}
@@ -129,6 +158,8 @@ function BracketMatch({
         isWinner={match.winner_id === match.player1_id}
         isFaded={!!match.winner_id && match.winner_id !== match.player1_id}
         isDoubles={isDoubles}
+        showEloBonus={showP1Bonus}
+        eloBonus={p1Result?.elo_bonus}
       />
 
       <div className="border-t border-border my-0.5" />
@@ -141,6 +172,8 @@ function BracketMatch({
         isWinner={match.winner_id === match.player2_id}
         isFaded={!!match.winner_id && match.winner_id !== match.player2_id}
         isDoubles={isDoubles}
+        showEloBonus={showP2Bonus}
+        eloBonus={p2Result?.elo_bonus}
       />
 
       {/* Record buttons */}
@@ -179,6 +212,7 @@ export function BracketView({
   isCreator,
   matchType,
   recordAction,
+  results,
 }: {
   matches: TournamentMatch[];
   profiles: Map<string, Profile>;
@@ -186,6 +220,7 @@ export function BracketView({
   isCreator: boolean;
   matchType: MatchType;
   recordAction: (formData: FormData) => Promise<void>;
+  results?: Map<string, TournamentResult>;
 }) {
   const isDoubles = matchType === "doubles";
 
@@ -240,6 +275,7 @@ export function BracketView({
                   canRecord={isCreator}
                   isDoubles={isDoubles}
                   recordAction={recordAction}
+                  results={results}
                 />
               ))}
             </div>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/shared/back-button";
 import { TournamentList } from "@/components/tournaments/tournament-list";
 
 export default async function TournamentsPage() {
@@ -23,6 +24,7 @@ export default async function TournamentsPage() {
 
   return (
     <div className="space-y-6">
+      <BackButton />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Tournaments</h1>

@@ -148,3 +148,16 @@ export interface SeasonWinner {
   final_rank: number;
   awarded_at: string;
 }
+
+// ============================================
+// TOURNAMENT RESULTS
+// ============================================
+
+export interface TournamentResult {
+  id: string;
+  tournament_id: string;
+  player_id: string;
+  position_label: string;
+  elo_bonus: number;
+  awarded_at: string;
+}

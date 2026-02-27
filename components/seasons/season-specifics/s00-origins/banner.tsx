@@ -2,8 +2,31 @@
 
 import Image from "next/image";
 import { zenDots } from "@/lib/fonts";
+import type { SeasonBannerProps } from "../index";
 
-export default function S00OriginsBanner() {
+function getTimeRemaining(endsAt: string): string {
+  const now = new Date();
+  const end = new Date(endsAt);
+  const diff = end.getTime() - now.getTime();
+
+  if (diff <= 0) return "Ending soon";
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+  if (days > 0) {
+    return `${days}d ${hours}h left`;
+  }
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  if (hours > 0) {
+    return `${hours}h ${minutes}m left`;
+  }
+  return `${minutes}m left`;
+}
+
+export default function S00OriginsBanner({ season }: SeasonBannerProps) {
+  const timeRemaining = getTimeRemaining(season.ends_at);
+
   return (
     <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-orange-950/50 via-background to-background border border-orange-500/20">
       {/* Background decoration */}
@@ -38,8 +61,8 @@ export default function S00OriginsBanner() {
           </span>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
-          <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
-          <span className="text-xs text-muted-foreground">Active</span>
+          <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+          <span className="text-xs text-muted-foreground">{timeRemaining}</span>
         </div>
       </div>
     </div>
