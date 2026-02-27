@@ -25,6 +25,18 @@ export function seedPlayers(players: Pick<Profile, "id" | "elo_rating">[]): stri
 }
 
 /**
+ * Seed teams by combined Elo (highest = seed 1).
+ * Returns team lead IDs in seeded order.
+ */
+export function seedTeams(
+  teams: { id: string; partnerId: string; teamElo: number }[]
+): string[] {
+  return [...teams]
+    .sort((a, b) => b.teamElo - a.teamElo)
+    .map((t) => t.id);
+}
+
+/**
  * Generate bracket match slots for single elimination.
  * Returns an array of { round, position, player1_id, player2_id }.
  *

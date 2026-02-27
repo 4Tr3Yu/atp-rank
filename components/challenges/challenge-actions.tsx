@@ -31,12 +31,19 @@ export function ChallengeActions({
   const handleRespond = useFormAction(respondAction);
   const handleCancel = useFormAction(cancelAction);
   const handleResolve = useFormAction(resolveAction ?? respondAction);
-  const isChallenger = currentUserId === challenge.challenger_id;
-  const isChallenged = currentUserId === challenge.challenged_id;
 
-  // Pending challenge — challenged user can accept/decline, challenger can cancel
+  const isOnChallengerTeam = currentUserId === challenge.challenger_id ||
+    currentUserId === challenge.challenger_partner_id;
+  const isOnChallengedTeam = currentUserId === challenge.challenged_id ||
+    currentUserId === challenge.challenged_partner_id;
+
+  const isDoubles = challenge.match_type === "doubles";
+  const wonLabel = isDoubles ? "We Won" : "I Won";
+  const lostLabel = isDoubles ? "We Lost" : "I Lost";
+
+  // Pending challenge — challenged team can accept/decline, challenger team can cancel
   if (challenge.status === "pending") {
-    if (isChallenged) {
+    if (isOnChallengedTeam) {
       return (
         <div className="flex gap-2 shrink-0">
           <form action={handleRespond}>
@@ -57,7 +64,7 @@ export function ChallengeActions({
       );
     }
 
-    if (isChallenger) {
+    if (isOnChallengerTeam) {
       return (
         <form action={handleCancel} className="shrink-0">
           <input type="hidden" name="challenge_id" value={challenge.id} />
@@ -69,14 +76,14 @@ export function ChallengeActions({
     }
   }
 
-  // Accepted challenge with resolve action — show "I Won" / "I Lost" buttons
+  // Accepted challenge with resolve action — any participant can report
   if (challenge.status === "accepted" && resolveAction) {
     return (
       <div className="flex gap-2 shrink-0">
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button size="sm" variant="default">
-              I Won
+              {wonLabel}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
@@ -107,7 +114,7 @@ export function ChallengeActions({
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button size="sm" variant="outline">
-              I Lost
+              {lostLabel}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
@@ -136,16 +143,6 @@ export function ChallengeActions({
         </AlertDialog>
       </div>
     );
-  }
-
-  // Accepted without resolve action (spectator/public) — nothing to show
-  if (challenge.status === "accepted") {
-    return null;
-  }
-
-  // Expired — nothing to show
-  if (challenge.status === "expired") {
-    return null;
   }
 
   return null;

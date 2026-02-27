@@ -1,13 +1,15 @@
 import { MatchCard } from "./match-card";
-import type { Match, Profile } from "@/lib/types/database";
+import type { Match, MatchPlayer, Profile } from "@/lib/types/database";
 
 export function MatchList({
   matches,
   profiles,
+  matchPlayersMap,
   layout = "list",
 }: {
   matches: Match[];
   profiles: Map<string, Profile>;
+  matchPlayersMap?: Map<string, MatchPlayer[]>;
   layout?: "list" | "grid";
 }) {
   if (matches.length === 0) {
@@ -25,12 +27,18 @@ export function MatchList({
         const loser = profiles.get(match.loser_id);
         if (!winner || !loser) return null;
 
+        const matchPlayers = match.match_type === "doubles"
+          ? matchPlayersMap?.get(match.id)
+          : undefined;
+
         return (
           <MatchCard
             key={match.id}
             match={match}
             winner={winner}
             loser={loser}
+            matchPlayers={matchPlayers}
+            profiles={profiles}
             layout={layout}
           />
         );

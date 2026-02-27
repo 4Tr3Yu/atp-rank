@@ -1,3 +1,5 @@
+export type MatchType = "singles" | "doubles";
+
 export interface Profile {
   id: string;
   username: string;
@@ -28,6 +30,16 @@ export interface Match {
   recorded_by: string;
   status: MatchStatus;
   confirmed_at: string | null;
+  match_type: MatchType;
+}
+
+export interface MatchPlayer {
+  id: string;
+  match_id: string;
+  player_id: string;
+  team: "winner" | "loser";
+  elo_before: number;
+  elo_change: number;
 }
 
 export type ChallengeStatus =
@@ -48,6 +60,9 @@ export interface Challenge {
   responded_at: string | null;
   completed_at: string | null;
   expires_at: string | null;
+  match_type: MatchType;
+  challenger_partner_id: string | null;
+  challenged_partner_id: string | null;
 }
 
 export type TournamentStatus =
@@ -66,12 +81,14 @@ export interface Tournament {
   created_at: string;
   started_at: string | null;
   completed_at: string | null;
+  match_type: MatchType;
 }
 
 export interface TournamentParticipant {
   id: string;
   tournament_id: string;
   player_id: string;
+  partner_id: string | null;
   seed: number | null;
   eliminated: boolean;
   joined_at: string;
@@ -84,7 +101,10 @@ export interface TournamentMatch {
   position: number;
   player1_id: string | null;
   player2_id: string | null;
+  player1_partner_id: string | null;
+  player2_partner_id: string | null;
   winner_id: string | null;
+  winner_partner_id: string | null;
   match_id: string | null;
   scheduled_at: string | null;
 }

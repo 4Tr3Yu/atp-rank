@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { zenDots } from "@/lib/fonts";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import type { Match, Profile } from "@/lib/types/database";
+import type { Match, MatchPlayer, Profile } from "@/lib/types/database";
 
 
 function getInitials(name: string) {
@@ -21,23 +22,104 @@ function timeAgo(date: string) {
   return `${days}d ago`;
 }
 
+function playerName(p: Profile) {
+  return p.display_name || p.username;
+}
+
+function TeamDisplay({
+  players,
+  change,
+  isWinner,
+  layout,
+}: {
+  players: Profile[];
+  change: number;
+  isWinner: boolean;
+  layout?: "list" | "grid";
+}) {
+  const colorClass = isWinner ? "text-green-400" : "text-red-400";
+  const sign = isWinner ? "+" : "-";
+
+  return (
+    <div className="relative z-20 flex flex-col items-center gap-1">
+      {players.map((p) => (
+        <Link
+          key={p.id}
+          href={`/player/${p.id}`}
+          className="hover:opacity-80 transition-opacity text-center"
+        >
+          <p className="text-base font-medium truncate">
+            {playerName(p)}
+          </p>
+        </Link>
+      ))}
+      <p className={`text-xs ${colorClass} tabular-nums`}>
+        {sign}{change} each
+      </p>
+    </div>
+  );
+}
+
 export function MatchCard({
   match,
   winner,
   loser,
+  matchPlayers,
+  profiles,
   layout,
 }: {
   match: Match;
   winner: Profile;
   loser: Profile;
+  matchPlayers?: MatchPlayer[];
+  profiles?: Map<string, Profile>;
   layout?: "list" | "grid";
 }) {
+  const isDoubles = match.match_type === "doubles" && matchPlayers && profiles;
+
+  if (isDoubles) {
+    const winnerPlayers = matchPlayers
+      .filter((mp) => mp.team === "winner")
+      .map((mp) => profiles.get(mp.player_id))
+      .filter(Boolean) as Profile[];
+    const loserPlayers = matchPlayers
+      .filter((mp) => mp.team === "loser")
+      .map((mp) => profiles.get(mp.player_id))
+      .filter(Boolean) as Profile[];
+
+    const playerChange = matchPlayers.find((mp) => mp.team === "winner")?.elo_change ?? match.elo_change;
+
+    return (
+      <div className={`relative flex items-center justify-around gap-4 rounded-xl border border-border p-4 overflow-hidden ${zenDots.className}`}>
+        <div className="absolute inset-0 bg-zinc-900/80" />
+        <div className="absolute inset-0 bg-orange-500/40 origin-top-left -skew-x-12" style={{ clipPath: "polygon(0 0, 60% 0, 40% 100%, 0 100%)" }} />
+
+        <TeamDisplay players={winnerPlayers} change={playerChange} isWinner layout={layout} />
+
+        <div className="relative z-20 flex flex-col items-center gap-1">
+          <Badge variant="outline" className="bg-purple-500/20 text-purple-400 border-purple-500/30 mb-1">
+            2v2
+          </Badge>
+          <span className={`shrink-0 drop-shadow-lg ${layout === "grid" ? "text-3xl" : "text-5xl"}`}>
+            VS
+          </span>
+          <span className="text-xs text-muted-foreground shrink-0">
+            {timeAgo(match.played_at)}
+          </span>
+        </div>
+
+        <TeamDisplay players={loserPlayers} change={playerChange} isWinner={false} layout={layout} />
+      </div>
+    );
+  }
+
+  // Singles layout (unchanged)
   return (
     <div className={`relative flex items-center justify-around gap-4 rounded-xl border border-border p-4 overflow-hidden ${zenDots.className}`}>
       {/* Diagonal split background */}
       <div className="absolute inset-0 bg-zinc-900/80" />
       <div className="absolute inset-0 bg-orange-500/40 origin-top-left -skew-x-12" style={{ clipPath: "polygon(0 0, 60% 0, 40% 100%, 0 100%)" }} />
-     
+
       {/* Winner */}
       <Link
         href={`/player/${winner.id}`}
@@ -46,13 +128,13 @@ export function MatchCard({
         {layout !== "grid" && (
           <Avatar className="h-8 w-8">
             <AvatarFallback className="bg-green-500/10 text-green-400 text-xs">
-              {getInitials(winner.display_name || winner.username)}
+              {getInitials(playerName(winner))}
             </AvatarFallback>
           </Avatar>
         )}
         <div className="min-w-0">
           <p className="text-lg font-medium truncate">
-            {winner.display_name || winner.username}
+            {playerName(winner)}
           </p>
           <p className="text-xs text-green-400 tabular-nums">
             +{match.elo_change}
@@ -76,13 +158,13 @@ export function MatchCard({
         {layout !== "grid" && (
           <Avatar className="h-8 w-8">
             <AvatarFallback className="bg-red-500/10 text-red-400 text-xs">
-              {getInitials(loser.display_name || loser.username)}
+              {getInitials(playerName(loser))}
             </AvatarFallback>
           </Avatar>
         )}
         <div className="min-w-0">
           <p className="text-lg font-medium truncate">
-            {loser.display_name || loser.username}
+            {playerName(loser)}
           </p>
           <p className="text-xs text-red-400 tabular-nums">
             -{match.elo_change}

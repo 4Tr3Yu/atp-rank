@@ -31,12 +31,21 @@ export function ChallengeList({
         const challenged = profiles.get(challenge.challenged_id);
         if (!challenger || !challenged) return null;
 
+        const challengerPartner = challenge.challenger_partner_id
+          ? profiles.get(challenge.challenger_partner_id) ?? null
+          : null;
+        const challengedPartner = challenge.challenged_partner_id
+          ? profiles.get(challenge.challenged_partner_id) ?? null
+          : null;
+
         return (
           <ChallengeCard
             key={challenge.id}
             challenge={challenge}
             challenger={challenger}
             challenged={challenged}
+            challengerPartner={challengerPartner}
+            challengedPartner={challengedPartner}
             currentUserId={currentUserId}
             respondAction={respondAction}
             cancelAction={cancelAction}

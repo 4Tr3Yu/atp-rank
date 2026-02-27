@@ -23,7 +23,14 @@ export function TournamentCard({
       <Card className="transition-colors hover:border-primary/30">
         <CardContent className="p-4 space-y-3">
           <div className="flex items-start justify-between">
-            <h3 className="font-semibold leading-tight">{tournament.name}</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold leading-tight">{tournament.name}</h3>
+              {tournament.match_type === "doubles" && (
+                <Badge variant="outline" className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                  2v2
+                </Badge>
+              )}
+            </div>
             <Badge
               variant="outline"
               className={statusColors[tournament.status]}

@@ -31,10 +31,24 @@ function timeAgo(date: string) {
   return `${days}d ago`;
 }
 
+function playerName(profile: Profile) {
+  return profile.display_name || profile.username;
+}
+
+function PlayerLink({ profile }: { profile: Profile }) {
+  return (
+    <Link href={`/player/${profile.id}`} className="hover:underline">
+      {playerName(profile)}
+    </Link>
+  );
+}
+
 export function ChallengeCard({
   challenge,
   challenger,
   challenged,
+  challengerPartner,
+  challengedPartner,
   currentUserId,
   respondAction,
   cancelAction,
@@ -43,15 +57,24 @@ export function ChallengeCard({
   challenge: Challenge;
   challenger: Profile;
   challenged: Profile;
+  challengerPartner?: Profile | null;
+  challengedPartner?: Profile | null;
   currentUserId?: string;
   respondAction: (formData: FormData) => Promise<void>;
   cancelAction: (formData: FormData) => Promise<void>;
   resolveAction?: (formData: FormData) => Promise<void>;
 }) {
+  const isDoubles = challenge.match_type === "doubles";
   const isParticipant = currentUserId != null;
-  const isChallenger = currentUserId === challenge.challenger_id;
+
+  const isOnChallengerTeam = currentUserId === challenge.challenger_id ||
+    currentUserId === challenge.challenger_partner_id;
+  const isOnChallengedTeam = currentUserId === challenge.challenged_id ||
+    currentUserId === challenge.challenged_partner_id;
+
+  // For singles: first profile in "opponent" team
   const opponent = isParticipant
-    ? isChallenger
+    ? isOnChallengerTeam
       ? challenged
       : challenger
     : null;
@@ -59,32 +82,31 @@ export function ChallengeCard({
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center">
       <div className="flex items-center gap-3 flex-1 min-w-0">
-        {isParticipant && opponent ? (
-          <>
-            <Link
-              href={`/player/${opponent.id}`}
-              className="shrink-0 hover:opacity-80 transition-opacity"
-            >
-              <Avatar className="h-10 w-10">
-                <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                  {getInitials(opponent.display_name || opponent.username)}
-                </AvatarFallback>
-              </Avatar>
-            </Link>
+        {isParticipant ? (
+          isDoubles ? (
+            /* Doubles participant view */
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-medium truncate">
-                  {isChallenger ? "You challenged " : ""}
-                  <Link
-                    href={`/player/${opponent.id}`}
-                    className="hover:underline"
-                  >
-                    {opponent.display_name || opponent.username}
-                  </Link>
-                  {!isChallenger ? " challenged you" : ""}
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-sm font-medium">
+                  {isOnChallengerTeam ? (
+                    <>
+                      You & <PlayerLink profile={challengerPartner ?? challenger} />{" "}
+                      <span className="text-muted-foreground">challenged</span>{" "}
+                      <PlayerLink profile={challenged} /> & <PlayerLink profile={challengedPartner ?? challenged} />
+                    </>
+                  ) : (
+                    <>
+                      <PlayerLink profile={challenger} /> & <PlayerLink profile={challengerPartner ?? challenger} />{" "}
+                      <span className="text-muted-foreground">challenged</span>{" "}
+                      you & <PlayerLink profile={isOnChallengedTeam && currentUserId !== challenge.challenged_id ? challenged : (challengedPartner ?? challenged)} />
+                    </>
+                  )}
                 </p>
                 <Badge variant="outline" className={statusColors[challenge.status]}>
                   {challenge.status}
+                </Badge>
+                <Badge variant="outline" className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                  2v2
                 </Badge>
               </div>
               {challenge.message && (
@@ -104,29 +126,81 @@ export function ChallengeCard({
                 )}
               </div>
             </div>
-          </>
+          ) : opponent ? (
+            /* Singles participant view */
+            <>
+              <Link
+                href={`/player/${opponent.id}`}
+                className="shrink-0 hover:opacity-80 transition-opacity"
+              >
+                <Avatar className="h-10 w-10">
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                    {getInitials(playerName(opponent))}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium truncate">
+                    {isOnChallengerTeam ? "You challenged " : ""}
+                    <Link
+                      href={`/player/${opponent.id}`}
+                      className="hover:underline"
+                    >
+                      {playerName(opponent)}
+                    </Link>
+                    {!isOnChallengerTeam ? " challenged you" : ""}
+                  </p>
+                  <Badge variant="outline" className={statusColors[challenge.status]}>
+                    {challenge.status}
+                  </Badge>
+                </div>
+                {challenge.message && (
+                  <p className="text-xs text-muted-foreground truncate mt-0.5">
+                    &ldquo;{challenge.message}&rdquo;
+                  </p>
+                )}
+                <div className="flex items-center gap-2 mt-0.5">
+                  <p className="text-xs text-muted-foreground">
+                    {timeAgo(challenge.created_at)}
+                  </p>
+                  {challenge.status === "accepted" && challenge.expires_at && (
+                    <>
+                      <span className="text-xs text-muted-foreground">·</span>
+                      <CountdownTimer expiresAt={challenge.expires_at} />
+                    </>
+                  )}
+                </div>
+              </div>
+            </>
+          ) : null
         ) : (
-          /* Public/spectator view: Challenger vs Challenged */
+          /* Public/spectator view */
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <p className="text-sm font-medium truncate">
-                <Link
-                  href={`/player/${challenger.id}`}
-                  className="hover:underline"
-                >
-                  {challenger.display_name || challenger.username}
-                </Link>
-                <span className="text-muted-foreground mx-1.5">vs</span>
-                <Link
-                  href={`/player/${challenged.id}`}
-                  className="hover:underline"
-                >
-                  {challenged.display_name || challenged.username}
-                </Link>
+                {isDoubles ? (
+                  <>
+                    <PlayerLink profile={challenger} /> & <PlayerLink profile={challengerPartner ?? challenger} />
+                    <span className="text-muted-foreground mx-1.5">vs</span>
+                    <PlayerLink profile={challenged} /> & <PlayerLink profile={challengedPartner ?? challenged} />
+                  </>
+                ) : (
+                  <>
+                    <PlayerLink profile={challenger} />
+                    <span className="text-muted-foreground mx-1.5">vs</span>
+                    <PlayerLink profile={challenged} />
+                  </>
+                )}
               </p>
               <Badge variant="outline" className={statusColors[challenge.status]}>
                 {challenge.status}
               </Badge>
+              {isDoubles && (
+                <Badge variant="outline" className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                  2v2
+                </Badge>
+              )}
             </div>
             <div className="flex items-center gap-2 mt-0.5">
               <p className="text-xs text-muted-foreground">
