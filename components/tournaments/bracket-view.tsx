@@ -1,12 +1,104 @@
 "use client";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useFormAction } from "@/lib/loading-context";
-import type { TournamentMatch, Profile, TournamentResult } from "@/lib/types/database";
+import type { MatchType, TournamentMatch, Profile, TournamentResult } from "@/lib/types/database";
 
 function getInitials(name: string) {
   return name.slice(0, 2).toUpperCase();
+}
+
+function playerName(p: Profile) {
+  return p.display_name || p.username;
+}
+
+function PlayerSlot({
+  playerId,
+  partnerId,
+  profiles,
+  isWinner,
+  isFaded,
+  isDoubles,
+  showEloBonus,
+  eloBonus,
+}: {
+  playerId: string | null;
+  partnerId?: string | null;
+  profiles: Map<string, Profile>;
+  isWinner: boolean;
+  isFaded: boolean;
+  isDoubles: boolean;
+  showEloBonus?: boolean;
+  eloBonus?: number;
+}) {
+  const player = playerId ? profiles.get(playerId) : null;
+  const partner = partnerId ? profiles.get(partnerId) : null;
+
+  const colorClass = isWinner
+    ? "bg-green-500/10 text-green-400"
+    : isFaded
+      ? "opacity-40"
+      : "";
+
+  const bonusBadge = showEloBonus && eloBonus ? (
+    <span className="ml-auto text-[10px] font-semibold text-green-400 shrink-0">
+      +{eloBonus}
+    </span>
+  ) : null;
+
+  if (!player) {
+    return (
+      <div className={`flex items-center gap-2 rounded px-2 py-1.5 text-sm ${colorClass}`}>
+        <span className="text-xs text-muted-foreground">TBD</span>
+      </div>
+    );
+  }
+
+  if (isDoubles && partner) {
+    return (
+      <div className={`flex items-center gap-0.5 rounded px-2 py-1 text-sm ${colorClass}`}>
+        <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <Avatar className="h-4 w-4 shrink-0">
+              <AvatarFallback className="text-[8px]">
+                {getInitials(playerName(player))}
+              </AvatarFallback>
+            </Avatar>
+            <span className="truncate font-medium text-xs">
+              {playerName(player)}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Avatar className="h-4 w-4 shrink-0">
+              <AvatarFallback className="text-[8px]">
+                {getInitials(playerName(partner))}
+              </AvatarFallback>
+            </Avatar>
+            <span className="truncate font-medium text-xs">
+              {playerName(partner)}
+            </span>
+          </div>
+        </div>
+        {bonusBadge}
+      </div>
+    );
+  }
+
+  return (
+    <div className={`flex items-center gap-2 rounded px-2 py-1.5 text-sm ${colorClass}`}>
+      <Avatar className="h-5 w-5 shrink-0">
+        <AvatarFallback className="text-[10px]">
+          {getInitials(playerName(player))}
+        </AvatarFallback>
+      </Avatar>
+      <span className="truncate font-medium text-xs">
+        {playerName(player)}
+      </span>
+      {bonusBadge}
+    </div>
+  );
 }
 
 function BracketMatch({
@@ -14,6 +106,7 @@ function BracketMatch({
   profiles,
   currentUserId,
   canRecord,
+  isDoubles,
   recordAction,
   results,
 }: {
@@ -21,6 +114,7 @@ function BracketMatch({
   profiles: Map<string, Profile>;
   currentUserId: string;
   canRecord: boolean;
+  isDoubles: boolean;
   recordAction: (formData: FormData) => Promise<void>;
   results?: Map<string, TournamentResult>;
 }) {
@@ -28,6 +122,18 @@ function BracketMatch({
   const player1 = match.player1_id ? profiles.get(match.player1_id) : null;
   const player2 = match.player2_id ? profiles.get(match.player2_id) : null;
   const isReady = player1 && player2 && !match.winner_id;
+
+  // For doubles win buttons, show short team name
+  const team1Label = isDoubles && player1
+    ? `${(playerName(player1)).split(" ")[0]} team`
+    : player1
+      ? `${(playerName(player1)).split(" ")[0]} wins`
+      : "";
+  const team2Label = isDoubles && player2
+    ? `${(playerName(player2)).split(" ")[0]} team`
+    : player2
+      ? `${(playerName(player2)).split(" ")[0]} wins`
+      : "";
 
   const p1Result = match.player1_id ? results?.get(match.player1_id) : undefined;
   const p2Result = match.player2_id ? results?.get(match.player2_id) : undefined;
@@ -37,107 +143,60 @@ function BracketMatch({
   const p1IsLoser = match.winner_id && match.winner_id !== match.player1_id;
   const p2IsLoser = match.winner_id && match.winner_id !== match.player2_id;
 
-  const showP1Bonus = p1IsLoser && p1Result && p1Result.elo_bonus > 0;
-  const showP2Bonus = p2IsLoser && p2Result && p2Result.elo_bonus > 0;
-  // Show champion bonus on the final match winner
-  const showP1ChampionBonus = match.winner_id === match.player1_id && p1Result?.position_label === "Champion";
-  const showP2ChampionBonus = match.winner_id === match.player2_id && p2Result?.position_label === "Champion";
+  const showP1Bonus = !!(p1IsLoser && p1Result && p1Result.elo_bonus > 0) ||
+    !!(match.winner_id === match.player1_id && p1Result?.position_label === "Champion");
+  const showP2Bonus = !!(p2IsLoser && p2Result && p2Result.elo_bonus > 0) ||
+    !!(match.winner_id === match.player2_id && p2Result?.position_label === "Champion");
 
   return (
-    <div className="rounded-lg border border-border bg-card p-2 w-48 shrink-0">
-      {/* Player 1 */}
-      <div
-        className={`flex items-center gap-2 rounded px-2 py-1.5 text-sm ${
-          match.winner_id === match.player1_id
-            ? "bg-green-500/10 text-green-400"
-            : match.winner_id && match.winner_id !== match.player1_id
-              ? "opacity-40"
-              : ""
-        }`}
-      >
-        {player1 ? (
-          <>
-            <Avatar className="h-5 w-5 shrink-0">
-              <AvatarFallback className="text-[10px]">
-                {getInitials(player1.display_name || player1.username)}
-              </AvatarFallback>
-            </Avatar>
-            <span className="truncate font-medium text-xs">
-              {player1.display_name || player1.username}
-            </span>
-            {(showP1Bonus || showP1ChampionBonus) && (
-              <span className="ml-auto text-[10px] font-semibold text-green-400 shrink-0">
-                +{p1Result!.elo_bonus}
-              </span>
-            )}
-          </>
-        ) : (
-          <span className="text-xs text-muted-foreground">TBD</span>
-        )}
-      </div>
+    <div className={`rounded-lg border border-border bg-card p-2 ${isDoubles ? "w-56" : "w-48"} shrink-0`}>
+      {/* Slot 1 */}
+      <PlayerSlot
+        playerId={match.player1_id}
+        partnerId={match.player1_partner_id}
+        profiles={profiles}
+        isWinner={match.winner_id === match.player1_id}
+        isFaded={!!match.winner_id && match.winner_id !== match.player1_id}
+        isDoubles={isDoubles}
+        showEloBonus={showP1Bonus}
+        eloBonus={p1Result?.elo_bonus}
+      />
 
       <div className="border-t border-border my-0.5" />
 
-      {/* Player 2 */}
-      <div
-        className={`flex items-center gap-2 rounded px-2 py-1.5 text-sm ${
-          match.winner_id === match.player2_id
-            ? "bg-green-500/10 text-green-400"
-            : match.winner_id && match.winner_id !== match.player2_id
-              ? "opacity-40"
-              : ""
-        }`}
-      >
-        {player2 ? (
-          <>
-            <Avatar className="h-5 w-5 shrink-0">
-              <AvatarFallback className="text-[10px]">
-                {getInitials(player2.display_name || player2.username)}
-              </AvatarFallback>
-            </Avatar>
-            <span className="truncate font-medium text-xs">
-              {player2.display_name || player2.username}
-            </span>
-            {(showP2Bonus || showP2ChampionBonus) && (
-              <span className="ml-auto text-[10px] font-semibold text-green-400 shrink-0">
-                +{p2Result!.elo_bonus}
-              </span>
-            )}
-          </>
-        ) : (
-          <span className="text-xs text-muted-foreground">TBD</span>
-        )}
-      </div>
+      {/* Slot 2 */}
+      <PlayerSlot
+        playerId={match.player2_id}
+        partnerId={match.player2_partner_id}
+        profiles={profiles}
+        isWinner={match.winner_id === match.player2_id}
+        isFaded={!!match.winner_id && match.winner_id !== match.player2_id}
+        isDoubles={isDoubles}
+        showEloBonus={showP2Bonus}
+        eloBonus={p2Result?.elo_bonus}
+      />
 
       {/* Record buttons */}
       {isReady && canRecord && (
         <div className="mt-2 flex gap-1">
           <form action={handleRecord} className="flex-1">
             <input type="hidden" name="tournament_match_id" value={match.id} />
-            <input
-              type="hidden"
-              name="tournament_id"
-              value={match.tournament_id}
-            />
+            <input type="hidden" name="tournament_id" value={match.tournament_id} />
             <input type="hidden" name="winner_id" value={match.player1_id!} />
             <input type="hidden" name="loser_id" value={match.player2_id!} />
             <input type="hidden" name="recorded_by" value={currentUserId} />
             <Button size="sm" variant="outline" className="w-full text-xs h-7">
-              {(player1?.display_name || player1?.username || "").split(" ")[0]} wins
+              {team1Label}
             </Button>
           </form>
           <form action={handleRecord} className="flex-1">
             <input type="hidden" name="tournament_match_id" value={match.id} />
-            <input
-              type="hidden"
-              name="tournament_id"
-              value={match.tournament_id}
-            />
+            <input type="hidden" name="tournament_id" value={match.tournament_id} />
             <input type="hidden" name="winner_id" value={match.player2_id!} />
             <input type="hidden" name="loser_id" value={match.player1_id!} />
             <input type="hidden" name="recorded_by" value={currentUserId} />
             <Button size="sm" variant="outline" className="w-full text-xs h-7">
-              {(player2?.display_name || player2?.username || "").split(" ")[0]} wins
+              {team2Label}
             </Button>
           </form>
         </div>
@@ -151,6 +210,7 @@ export function BracketView({
   profiles,
   currentUserId,
   isCreator,
+  matchType,
   recordAction,
   results,
 }: {
@@ -158,9 +218,12 @@ export function BracketView({
   profiles: Map<string, Profile>;
   currentUserId: string;
   isCreator: boolean;
+  matchType: MatchType;
   recordAction: (formData: FormData) => Promise<void>;
   results?: Map<string, TournamentResult>;
 }) {
+  const isDoubles = matchType === "doubles";
+
   if (matches.length === 0) {
     return (
       <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">
@@ -210,6 +273,7 @@ export function BracketView({
                   profiles={profiles}
                   currentUserId={currentUserId}
                   canRecord={isCreator}
+                  isDoubles={isDoubles}
                   recordAction={recordAction}
                   results={results}
                 />

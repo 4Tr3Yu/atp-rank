@@ -61,6 +61,25 @@ export function calculateEloChange(
 }
 
 /**
+ * Calculate Elo change for a doubles match.
+ * Team Elo = sum of individual Elos. Flat K=32 (no rank-weighting).
+ * Returns team-level change and per-player change (half, rounded).
+ */
+export function calculateDoublesEloChange(
+  winner1Rating: number,
+  winner2Rating: number,
+  loser1Rating: number,
+  loser2Rating: number
+): { teamChange: number; playerChange: number } {
+  const teamWinnerElo = winner1Rating + winner2Rating;
+  const teamLoserElo = loser1Rating + loser2Rating;
+  const expected = expectedScore(teamWinnerElo, teamLoserElo);
+  const teamChange = Math.max(1, Math.round(K_FACTOR * (1 - expected)));
+  const playerChange = Math.max(1, Math.round(teamChange / 2));
+  return { teamChange, playerChange };
+}
+
+/**
  * Apply match result and return new ratings.
  */
 export function applyMatchResult(

@@ -26,17 +26,17 @@ export function PlayerSelect({
   value,
   onSelect,
   placeholder = "Select player...",
-  excludeId,
+  excludeIds,
 }: {
   players: Profile[];
   value: string;
   onSelect: (id: string) => void;
   placeholder?: string;
-  excludeId?: string;
+  excludeIds?: string[];
 }) {
   const [open, setOpen] = useState(false);
-  const filtered = excludeId
-    ? players.filter((p) => p.id !== excludeId)
+  const filtered = excludeIds?.length
+    ? players.filter((p) => !excludeIds.includes(p.id))
     : players;
   const selected = players.find((p) => p.id === value);
 

@@ -22,6 +22,14 @@ const statusColors: Record<string, string> = {
   completed: "bg-muted text-muted-foreground border-border",
 };
 
+function getInitials(name: string) {
+  return name.slice(0, 2).toUpperCase();
+}
+
+function playerName(profile: Profile) {
+  return profile.display_name || profile.username;
+}
+
 export default async function TournamentDetailPage({
   params,
 }: {
@@ -40,6 +48,8 @@ export default async function TournamentDetailPage({
     .single();
 
   if (!tournament) notFound();
+
+  const isDoubles = tournament.match_type === "doubles";
 
   const { data: participants } = await supabase
     .from("tournament_participants")
@@ -76,9 +86,12 @@ export default async function TournamentDetailPage({
   }
 
   const isCreator = user!.id === tournament.created_by;
+
+  // For doubles, check if user is player_id OR partner_id in any participant row
   const isParticipant = (participants || []).some(
-    (p) => p.player_id === user!.id
+    (p) => p.player_id === user!.id || p.partner_id === user!.id
   );
+
   const isOpen = tournament.status === "open";
   const isInProgress = tournament.status === "in_progress";
   const isFull =
@@ -87,6 +100,13 @@ export default async function TournamentDetailPage({
   const canLeave = isOpen && isParticipant && !isCreator;
   const canStart =
     isOpen && isCreator && (participants || []).length >= 2;
+
+  // Collect existing player IDs (for doubles join exclusion)
+  const existingPlayerIds: string[] = [];
+  for (const p of participants || []) {
+    existingPlayerIds.push(p.player_id);
+    if (p.partner_id) existingPlayerIds.push(p.partner_id);
+  }
 
   return (
     <div className="space-y-6">
@@ -104,6 +124,11 @@ export default async function TournamentDetailPage({
             >
               {tournament.status.replace("_", " ")}
             </Badge>
+            {isDoubles && (
+              <Badge variant="outline" className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                2v2
+              </Badge>
+            )}
           </div>
           {tournament.description && (
             <p className="text-muted-foreground mt-1">
@@ -114,12 +139,15 @@ export default async function TournamentDetailPage({
         <TournamentActions
           tournamentId={id}
           userId={user!.id}
+          matchType={tournament.match_type}
           canJoin={canJoin}
           canLeave={canLeave}
           canStart={canStart}
           joinAction={joinTournament}
           leaveAction={leaveTournament}
           startAction={startTournament}
+          players={profiles || []}
+          existingPlayerIds={existingPlayerIds}
         />
       </div>
 
@@ -128,28 +156,49 @@ export default async function TournamentDetailPage({
       {/* Participants */}
       <div>
         <h2 className="mb-3 text-lg font-semibold">
-          Players ({(participants || []).length} / {tournament.max_players})
+          {isDoubles ? "Teams" : "Players"} ({(participants || []).length} / {tournament.max_players})
         </h2>
         <div className="flex flex-wrap gap-2">
           {(participants || []).map((p) => {
             const profile = profileMap.get(p.player_id);
             if (!profile) return null;
+            const partner = p.partner_id ? profileMap.get(p.partner_id) : null;
+
             return (
-              <Link
+              <div
                 key={p.id}
-                href={`/player/${profile.id}`}
                 className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 transition-colors hover:border-primary/30"
               >
-                <Avatar className="h-6 w-6">
-                  <AvatarFallback className="text-[10px] bg-primary/10 text-primary">
-                    {(profile.display_name || profile.username)
-                      .slice(0, 2)
-                      .toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm font-medium">
-                  {profile.display_name || profile.username}
-                </span>
+                <Link href={`/player/${profile.id}`} className="flex items-center gap-2">
+                  <Avatar className="h-6 w-6">
+                    <AvatarFallback className="text-[10px] bg-primary/10 text-primary">
+                      {getInitials(playerName(profile))}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium">
+                    {playerName(profile)}
+                  </span>
+                </Link>
+                {isDoubles && partner && (
+                  <>
+                    <span className="text-xs text-muted-foreground">&</span>
+                    <Link href={`/player/${partner.id}`} className="flex items-center gap-2">
+                      <Avatar className="h-6 w-6">
+                        <AvatarFallback className="text-[10px] bg-primary/10 text-primary">
+                          {getInitials(playerName(partner))}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm font-medium">
+                        {playerName(partner)}
+                      </span>
+                    </Link>
+                  </>
+                )}
+                {isDoubles && partner && (
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {profile.elo_rating + partner.elo_rating}
+                  </span>
+                )}
                 {p.seed && (
                   <span className="text-xs text-muted-foreground">
                     #{p.seed}
@@ -160,7 +209,7 @@ export default async function TournamentDetailPage({
                     Out
                   </Badge>
                 )}
-              </Link>
+              </div>
             );
           })}
         </div>
@@ -175,6 +224,7 @@ export default async function TournamentDetailPage({
             profiles={profileMap}
             currentUserId={user!.id}
             isCreator={isCreator}
+            matchType={tournament.match_type}
             recordAction={recordTournamentMatch}
             results={resultsMap}
           />
