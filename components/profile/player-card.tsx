@@ -9,7 +9,7 @@ export function PlayerCard({
   seasonFinishElo,
 }: {
   profile: Profile;
-  rank: number;
+  rank: number | null;
   seasonFinishElo?: number;
 }) {
   const initials = (profile.display_name || profile.username)
@@ -32,7 +32,7 @@ export function PlayerCard({
           <h2 className="text-xl font-bold">
             {profile.display_name || profile.username}
           </h2>
-          <Badge variant="outline">#{rank}</Badge>
+          <Badge variant="outline">{rank !== null ? `#${rank}` : "Unranked"}</Badge>
           <TierBadge eloRating={profile.elo_rating} showLabel />
         </div>
         <p className="text-sm text-muted-foreground">@{profile.username}</p>

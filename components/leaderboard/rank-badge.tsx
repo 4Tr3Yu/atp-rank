@@ -6,7 +6,13 @@ const rankStyles: Record<number, string> = {
   3: "bg-orange-700/20 text-orange-400 border-orange-700/30",
 };
 
-export function RankBadge({ rank }: { rank: number }) {
+export function RankBadge({ rank }: { rank: number | null }) {
+  if (rank === null) {
+    return (
+      <span className="text-sm text-muted-foreground font-medium">&mdash;</span>
+    );
+  }
+
   if (rank <= 3) {
     return (
       <Badge variant="outline" className={`font-bold ${rankStyles[rank]}`}>

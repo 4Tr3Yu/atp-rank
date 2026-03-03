@@ -26,13 +26,19 @@ export default async function PlayerProfilePage({
 
   if (!profile) notFound();
 
-  // Get player's rank
+  // Get player's rank (only among players with matches)
   const { data: allProfiles } = await supabase
     .from("profiles")
-    .select("id, elo_rating")
+    .select("id, elo_rating, wins, losses")
     .order("elo_rating", { ascending: false });
 
-  const rank = (allProfiles || []).findIndex((p) => p.id === id) + 1;
+  const isRanked = profile.wins + profile.losses > 0;
+  const rankedProfiles = (allProfiles || []).filter(
+    (p) => p.wins + p.losses > 0,
+  );
+  const rank = isRanked
+    ? rankedProfiles.findIndex((p) => p.id === id) + 1
+    : null;
 
   // Fetch match history
   const { data: matches } = await supabase
