@@ -27,7 +27,7 @@ export function AwaitingConfirmationCard({
 }) {
   const isWinner = currentUserId === match.winner_id;
   const opponent = isWinner ? loser : winner;
-  const eloChange = match.elo_change;
+  const eloChange = isWinner ? match.elo_change : (match.loser_elo_change ?? match.elo_change);
 
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-3 py-2.5">

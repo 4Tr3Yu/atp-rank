@@ -72,6 +72,9 @@ export function RecordMatchForm({
           winnerRank,
           loserRank,
           totalPlayers,
+        }, {
+          winnerTotalMatches: singlesWinner.total_wins + singlesWinner.total_losses,
+          loserTotalMatches: singlesLoser.total_wins + singlesLoser.total_losses,
         })
       : null;
 
@@ -97,7 +100,13 @@ export function RecordMatchForm({
           doublesWinner1.elo_rating,
           doublesWinner2.elo_rating,
           doublesLoser1.elo_rating,
-          doublesLoser2.elo_rating
+          doublesLoser2.elo_rating,
+          {
+            winner1TotalMatches: doublesWinner1.total_wins + doublesWinner1.total_losses,
+            winner2TotalMatches: doublesWinner2.total_wins + doublesWinner2.total_losses,
+            loser1TotalMatches: doublesLoser1.total_wins + doublesLoser1.total_losses,
+            loser2TotalMatches: doublesLoser2.total_wins + doublesLoser2.total_losses,
+          }
         )
       : null;
 
@@ -253,14 +262,14 @@ export function RecordMatchForm({
           <div className="flex justify-between text-sm">
             <span>{singlesWinner.display_name || singlesWinner.username}</span>
             <span className="text-green-400 tabular-nums font-medium">
-              {singlesWinner.elo_rating} → {singlesWinner.elo_rating + singlesPreview} (+{singlesPreview})
+              {singlesWinner.elo_rating} → {singlesWinner.elo_rating + singlesPreview.winnerGain} (+{singlesPreview.winnerGain})
             </span>
           </div>
           <div className="flex justify-between text-sm">
             <span>{singlesLoser.display_name || singlesLoser.username}</span>
             <span className="text-red-400 tabular-nums font-medium">
-              {singlesLoser.elo_rating} → {Math.max(MINIMUM_RATING, singlesLoser.elo_rating - singlesPreview)} (-
-              {singlesPreview})
+              {singlesLoser.elo_rating} → {Math.max(MINIMUM_RATING, singlesLoser.elo_rating - singlesPreview.loserLoss)} (-
+              {singlesPreview.loserLoss})
             </span>
           </div>
         </div>
@@ -277,20 +286,26 @@ export function RecordMatchForm({
               {doublesLoser1.elo_rating + doublesLoser2.elo_rating}
             </p>
           </div>
-          {[doublesWinner1, doublesWinner2].map((p) => (
+          {([
+            { player: doublesWinner1, change: doublesPreview.winner1Change },
+            { player: doublesWinner2, change: doublesPreview.winner2Change },
+          ] as const).map(({ player: p, change }) => (
             <div key={p.id} className="flex justify-between text-sm">
               <span>{p.display_name || p.username}</span>
               <span className="text-green-400 tabular-nums font-medium">
-                {p.elo_rating} → {p.elo_rating + doublesPreview.playerChange} (+{doublesPreview.playerChange})
+                {p.elo_rating} → {p.elo_rating + change} (+{change})
               </span>
             </div>
           ))}
-          {[doublesLoser1, doublesLoser2].map((p) => (
+          {([
+            { player: doublesLoser1, change: doublesPreview.loser1Change },
+            { player: doublesLoser2, change: doublesPreview.loser2Change },
+          ] as const).map(({ player: p, change }) => (
             <div key={p.id} className="flex justify-between text-sm">
               <span>{p.display_name || p.username}</span>
               <span className="text-red-400 tabular-nums font-medium">
-                {p.elo_rating} → {Math.max(MINIMUM_RATING, p.elo_rating - doublesPreview.playerChange)} (-
-                {doublesPreview.playerChange})
+                {p.elo_rating} → {Math.max(MINIMUM_RATING, p.elo_rating - change)} (-
+                {change})
               </span>
             </div>
           ))}

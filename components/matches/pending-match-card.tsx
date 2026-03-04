@@ -61,7 +61,9 @@ export function PendingMatchCard({
     const isOnWinnerTeam = matchPlayers.some(
       (mp) => mp.player_id === currentUserId && mp.team === "winner"
     );
-    const playerChange = matchPlayers.find((mp) => mp.team === "winner")?.elo_change ?? match.elo_change;
+    const myChange = matchPlayers.find(
+      (mp) => mp.player_id === currentUserId
+    )?.elo_change ?? match.elo_change;
 
     return (
       <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center">
@@ -92,7 +94,7 @@ export function PendingMatchCard({
                 isOnWinnerTeam ? "text-green-400" : "text-red-400"
               }`}
             >
-              ~{isOnWinnerTeam ? "+" : "-"}{playerChange} each
+              ~{isOnWinnerTeam ? "+" : "-"}{Math.abs(myChange)}
             </span>
           </div>
           <p className="text-xs text-muted-foreground mt-1">
@@ -112,7 +114,7 @@ export function PendingMatchCard({
   // Singles (existing layout)
   const isWinner = currentUserId === match.winner_id;
   const opponent = isWinner ? loser : winner;
-  const eloChange = match.elo_change;
+  const eloChange = isWinner ? match.elo_change : (match.loser_elo_change ?? match.elo_change);
   const currentElo = isWinner ? match.winner_elo_before : match.loser_elo_before;
   const newElo = isWinner
     ? currentElo + eloChange
