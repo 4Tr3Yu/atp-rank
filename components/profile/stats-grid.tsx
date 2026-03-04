@@ -53,7 +53,7 @@ export function StatsGrid({
     if (match.winner_id === profile.id) {
       currentElo = match.winner_elo_before + match.elo_change;
     } else {
-      currentElo = Math.max(100, match.loser_elo_before - match.elo_change);
+      currentElo = Math.max(100, match.loser_elo_before - (match.loser_elo_change ?? match.elo_change));
     }
     bestElo = Math.max(bestElo, currentElo);
   }

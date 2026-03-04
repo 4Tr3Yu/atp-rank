@@ -25,7 +25,7 @@ export function EloChart({
     const won = match.winner_id === playerId;
     const elo = won
       ? match.winner_elo_before + match.elo_change
-      : Math.max(100, match.loser_elo_before - match.elo_change);
+      : Math.max(100, match.loser_elo_before - (match.loser_elo_change ?? match.elo_change));
     const date = new Date(match.played_at);
     points.push({
       elo,

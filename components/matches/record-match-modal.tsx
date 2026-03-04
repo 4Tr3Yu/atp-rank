@@ -31,13 +31,15 @@ import type { MatchType, Profile } from "@/lib/types/database";
 function EloPreview({
   winner,
   loser,
-  change,
+  winnerGain,
+  loserLoss,
   winnerRank,
   loserRank,
 }: {
   winner: Profile;
   loser: Profile;
-  change: number;
+  winnerGain: number;
+  loserLoss: number;
   winnerRank: number;
   loserRank: number;
 }) {
@@ -52,14 +54,14 @@ function EloPreview({
       <div className="flex justify-between text-sm">
         <span>{winner.display_name || winner.username}</span>
         <span className="text-green-400 tabular-nums font-medium">
-          {winner.elo_rating} → {winner.elo_rating + change} (+{change})
+          {winner.elo_rating} → {winner.elo_rating + winnerGain} (+{winnerGain})
         </span>
       </div>
       <div className="flex justify-between text-sm">
         <span>{loser.display_name || loser.username}</span>
         <span className="text-red-400 tabular-nums font-medium">
-          {loser.elo_rating} → {Math.max(MINIMUM_RATING, loser.elo_rating - change)} (-
-          {change})
+          {loser.elo_rating} → {Math.max(MINIMUM_RATING, loser.elo_rating - loserLoss)} (-
+          {loserLoss})
         </span>
       </div>
     </div>
@@ -69,13 +71,15 @@ function EloPreview({
 function DoublesEloPreview({
   winners,
   losers,
-  playerChange,
+  winnerChanges,
+  loserChanges,
   teamWinnerElo,
   teamLoserElo,
 }: {
   winners: Profile[];
   losers: Profile[];
-  playerChange: number;
+  winnerChanges: number[];
+  loserChanges: number[];
   teamWinnerElo: number;
   teamLoserElo: number;
 }) {
@@ -87,20 +91,20 @@ function DoublesEloPreview({
           Team {teamWinnerElo} vs {teamLoserElo}
         </p>
       </div>
-      {winners.map((p) => (
+      {winners.map((p, i) => (
         <div key={p.id} className="flex justify-between text-sm">
           <span>{p.display_name || p.username}</span>
           <span className="text-green-400 tabular-nums font-medium">
-            {p.elo_rating} → {p.elo_rating + playerChange} (+{playerChange})
+            {p.elo_rating} → {p.elo_rating + winnerChanges[i]} (+{winnerChanges[i]})
           </span>
         </div>
       ))}
-      {losers.map((p) => (
+      {losers.map((p, i) => (
         <div key={p.id} className="flex justify-between text-sm">
           <span>{p.display_name || p.username}</span>
           <span className="text-red-400 tabular-nums font-medium">
-            {p.elo_rating} → {Math.max(MINIMUM_RATING, p.elo_rating - playerChange)} (-
-            {playerChange})
+            {p.elo_rating} → {Math.max(MINIMUM_RATING, p.elo_rating - loserChanges[i])} (-
+            {loserChanges[i]})
           </span>
         </div>
       ))}
@@ -171,6 +175,9 @@ function RecordMatchContent({
           winnerRank,
           loserRank,
           totalPlayers,
+        }, {
+          winnerTotalMatches: singlesWinner.total_wins + singlesWinner.total_losses,
+          loserTotalMatches: singlesLoser.total_wins + singlesLoser.total_losses,
         })
       : null;
 
@@ -196,7 +203,13 @@ function RecordMatchContent({
           doublesWinner1.elo_rating,
           doublesWinner2.elo_rating,
           doublesLoser1.elo_rating,
-          doublesLoser2.elo_rating
+          doublesLoser2.elo_rating,
+          {
+            winner1TotalMatches: doublesWinner1.total_wins + doublesWinner1.total_losses,
+            winner2TotalMatches: doublesWinner2.total_wins + doublesWinner2.total_losses,
+            loser1TotalMatches: doublesLoser1.total_wins + doublesLoser1.total_losses,
+            loser2TotalMatches: doublesLoser2.total_wins + doublesLoser2.total_losses,
+          }
         )
       : null;
 
@@ -336,7 +349,8 @@ function RecordMatchContent({
         <EloPreview
           winner={singlesWinner}
           loser={singlesLoser}
-          change={singlesPreview}
+          winnerGain={singlesPreview.winnerGain}
+          loserLoss={singlesPreview.loserLoss}
           winnerRank={winnerRank}
           loserRank={loserRank}
         />
@@ -346,7 +360,8 @@ function RecordMatchContent({
         <DoublesEloPreview
           winners={[doublesWinner1, doublesWinner2]}
           losers={[doublesLoser1, doublesLoser2]}
-          playerChange={doublesPreview.playerChange}
+          winnerChanges={[doublesPreview.winner1Change, doublesPreview.winner2Change]}
+          loserChanges={[doublesPreview.loser1Change, doublesPreview.loser2Change]}
           teamWinnerElo={doublesWinner1.elo_rating + doublesWinner2.elo_rating}
           teamLoserElo={doublesLoser1.elo_rating + doublesLoser2.elo_rating}
         />

@@ -28,21 +28,19 @@ function playerName(p: Profile) {
 
 function TeamDisplay({
   players,
-  change,
+  changes,
   isWinner,
-  layout,
 }: {
   players: Profile[];
-  change: number;
+  changes: number[];
   isWinner: boolean;
-  layout?: "list" | "grid";
 }) {
   const colorClass = isWinner ? "text-green-400" : "text-red-400";
   const sign = isWinner ? "+" : "-";
 
   return (
     <div className="relative z-20 flex flex-col items-center gap-1">
-      {players.map((p) => (
+      {players.map((p, i) => (
         <Link
           key={p.id}
           href={`/player/${p.id}`}
@@ -51,11 +49,11 @@ function TeamDisplay({
           <p className="text-base font-medium truncate">
             {playerName(p)}
           </p>
+          <p className={`text-xs ${colorClass} tabular-nums`}>
+            {sign}{Math.abs(changes[i])}
+          </p>
         </Link>
       ))}
-      <p className={`text-xs ${colorClass} tabular-nums`}>
-        {sign}{change} each
-      </p>
     </div>
   );
 }
@@ -87,14 +85,19 @@ export function MatchCard({
       .map((mp) => profiles.get(mp.player_id))
       .filter(Boolean) as Profile[];
 
-    const playerChange = matchPlayers.find((mp) => mp.team === "winner")?.elo_change ?? match.elo_change;
+    const winnerChanges = matchPlayers
+      .filter((mp) => mp.team === "winner")
+      .map((mp) => mp.elo_change);
+    const loserChanges = matchPlayers
+      .filter((mp) => mp.team === "loser")
+      .map((mp) => mp.elo_change);
 
     return (
       <div className={`relative flex items-center justify-around gap-4 rounded-xl border border-border p-4 overflow-hidden ${zenDots.className}`}>
         <div className="absolute inset-0 bg-zinc-900/80" />
         <div className="absolute inset-0 bg-orange-500/40 origin-top-left -skew-x-12" style={{ clipPath: "polygon(0 0, 60% 0, 40% 100%, 0 100%)" }} />
 
-        <TeamDisplay players={winnerPlayers} change={playerChange} isWinner layout={layout} />
+        <TeamDisplay players={winnerPlayers} changes={winnerChanges} isWinner />
 
         <div className="relative z-20 flex flex-col items-center gap-1">
           <Badge variant="outline" className="bg-purple-500/20 text-purple-400 border-purple-500/30 mb-1">
@@ -108,7 +111,7 @@ export function MatchCard({
           </span>
         </div>
 
-        <TeamDisplay players={loserPlayers} change={playerChange} isWinner={false} layout={layout} />
+        <TeamDisplay players={loserPlayers} changes={loserChanges} isWinner={false} />
       </div>
     );
   }
@@ -167,7 +170,7 @@ export function MatchCard({
             {playerName(loser)}
           </p>
           <p className="text-xs text-red-400 tabular-nums">
-            -{match.elo_change}
+            -{match.loser_elo_change ?? match.elo_change}
           </p>
         </div>
       </Link>
