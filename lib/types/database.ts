@@ -23,6 +23,7 @@ export interface Match {
   winner_elo_before: number;
   loser_elo_before: number;
   elo_change: number;
+  loser_elo_change: number | null;
   challenge_id: string | null;
   tournament_match_id: string | null;
   season_id: string | null;
