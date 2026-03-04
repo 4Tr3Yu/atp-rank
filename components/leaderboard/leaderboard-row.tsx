@@ -11,7 +11,7 @@ export function LeaderboardRow({
   seasonFinishElo,
 }: {
   profile: Profile;
-  rank: number;
+  rank: number | null;
   seasonFinishElo?: number;
 }) {
   const totalMatches = profile.wins + profile.losses;

@@ -40,14 +40,20 @@ export default async function DashboardPage() {
     .eq("id", user!.id)
     .single();
 
-  // Get rank
+  // Get rank (only among players with matches)
   const { data: allProfiles } = await supabase
     .from("profiles")
-    .select("id, elo_rating")
+    .select("id, elo_rating, wins, losses")
     .order("elo_rating", { ascending: false });
 
-  const rank = (allProfiles || []).findIndex((p) => p.id === user!.id) + 1;
-  const totalPlayers = (allProfiles || []).length;
+  const isRanked = (profile?.wins ?? 0) + (profile?.losses ?? 0) > 0;
+  const rankedProfiles = (allProfiles || []).filter(
+    (p) => p.wins + p.losses > 0,
+  );
+  const rank = isRanked
+    ? rankedProfiles.findIndex((p) => p.id === user!.id) + 1
+    : null;
+  const totalRankedPlayers = rankedProfiles.length;
 
   // Recent matches for this user (confirmed only)
   const { data: matches } = await supabase
@@ -151,12 +157,20 @@ export default async function DashboardPage() {
             <Card>
               <CardContent className="p-6 text-center">
                 <p className="text-4xl font-bold tabular-nums">
-                  #{rank || "-"}{" "}
-                  <span className="text-lg font-normal text-muted-foreground">
-                    / {totalPlayers}
-                  </span>
+                  {rank !== null ? (
+                    <>
+                      #{rank}{" "}
+                      <span className="text-lg font-normal text-muted-foreground">
+                        / {totalRankedPlayers}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
                 </p>
-                <p className="text-sm text-muted-foreground">Rank</p>
+                <p className="text-sm text-muted-foreground">
+                  {rank !== null ? "Rank" : "Unranked"}
+                </p>
               </CardContent>
             </Card>
             <Card>

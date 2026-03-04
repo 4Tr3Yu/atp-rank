@@ -49,6 +49,14 @@ export default async function HomePage() {
     }
   }
 
+  // Split into ranked (has matches) and unranked (no matches)
+  const rankedProfiles = (profiles || []).filter(
+    (p) => p.wins + p.losses > 0,
+  );
+  const unrankedProfiles = (profiles || []).filter(
+    (p) => p.wins + p.losses === 0,
+  );
+
   // Profile map for match display
   const profileMap = new Map<string, Profile>();
   for (const p of profiles || []) {
@@ -70,7 +78,7 @@ export default async function HomePage() {
               )}
             </div>
           </div>
-          <LeaderboardTable profiles={profiles || []} tierFinishes={tierFinishes} />
+          <LeaderboardTable profiles={rankedProfiles} unrankedProfiles={unrankedProfiles} tierFinishes={tierFinishes} />
         </div>
 
         <div className="lg:col-span-1">
