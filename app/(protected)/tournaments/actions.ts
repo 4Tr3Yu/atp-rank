@@ -114,7 +114,7 @@ export async function startTournament(formData: FormData) {
   // Fetch participants with their Elo ratings
   const { data: participants } = await supabase
     .from("tournament_participants")
-    .select("player_id, partner_id, profiles(elo_rating)")
+    .select("player_id, partner_id, profiles!tournament_participants_player_id_fkey(elo_rating)")
     .eq("tournament_id", tournamentId);
 
   if (!participants || participants.length < 2) {
