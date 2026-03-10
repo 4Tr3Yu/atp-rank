@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users } from "lucide-react";
+import { Trophy, Users } from "lucide-react";
 import type { Tournament } from "@/lib/types/database";
 
 const statusColors: Record<string, string> = {
@@ -43,11 +43,17 @@ export function TournamentCard({
               {tournament.description}
             </p>
           )}
-          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-            <Users className="h-3.5 w-3.5" />
-            <span className="tabular-nums">
-              {participantCount} / {tournament.max_players}
-            </span>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <Users className="h-3.5 w-3.5" />
+              <span className="tabular-nums">
+                {participantCount} / {tournament.max_players}
+              </span>
+            </div>
+            <div className="flex items-center gap-1 text-primary">
+              <Trophy className="h-3.5 w-3.5" />
+              <span className="tabular-nums font-medium">+200</span>
+            </div>
           </div>
         </CardContent>
       </Card>

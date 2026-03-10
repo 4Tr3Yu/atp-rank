@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { BracketView } from "@/components/tournaments/bracket-view";
 import { TournamentActions } from "@/components/tournaments/tournament-actions";
+import { TournamentPrizes } from "@/components/tournaments/tournament-prizes";
 import {
   joinTournament,
   leaveTournament,
@@ -152,6 +153,11 @@ export default async function TournamentDetailPage({
       </div>
 
       <Separator />
+
+      {/* Prizes */}
+      {tournament.status !== "completed" && (
+        <TournamentPrizes maxPlayers={tournament.max_players} />
+      )}
 
       {/* Participants */}
       <div>
