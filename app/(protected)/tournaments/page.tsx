@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { Trophy } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { BackButton } from "@/components/shared/back-button";
 import { TournamentList } from "@/components/tournaments/tournament-list";
+import { getPrizes } from "@/lib/tournament-prizes";
 
 export default async function TournamentsPage() {
   const supabase = await createClient();
@@ -35,6 +37,46 @@ export default async function TournamentsPage() {
         <Button asChild>
           <Link href="/tournaments/new">Create Tournament</Link>
         </Button>
+      </div>
+
+      {/* Rewards Hero */}
+      <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-5 space-y-4">
+        <div className="flex items-center gap-2">
+          <Trophy className="h-5 w-5 text-primary" />
+          <h2 className="text-lg font-bold">Earn Elo by competing</h2>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Top finishers earn bonus Elo points. Bigger brackets, bigger rewards.
+        </p>
+        <div className="grid grid-cols-3 gap-3">
+          {([4, 8, 16] as const).map((size) => {
+            const prizes = getPrizes(size);
+            return (
+              <div
+                key={size}
+                className="rounded-xl border border-border bg-card p-3 space-y-2"
+              >
+                <p className="text-xs font-semibold text-muted-foreground">
+                  {size} players
+                </p>
+                {prizes.map((prize) => (
+                  <div
+                    key={prize.label}
+                    className="flex items-center justify-between text-xs"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <span>{prize.icon}</span>
+                      <span className="font-medium">{prize.label}</span>
+                    </span>
+                    <span className="font-semibold text-green-400 tabular-nums">
+                      +{prize.bonus}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
       </div>
       <TournamentList
         tournaments={tournaments || []}
