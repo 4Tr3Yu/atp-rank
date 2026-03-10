@@ -155,9 +155,7 @@ export default async function TournamentDetailPage({
       <Separator />
 
       {/* Prizes */}
-      {tournament.status !== "completed" && (
-        <TournamentPrizes maxPlayers={tournament.max_players} />
-      )}
+      <TournamentPrizes maxPlayers={tournament.max_players} />
 
       {/* Participants */}
       <div>
