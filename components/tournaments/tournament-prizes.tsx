@@ -1,15 +1,8 @@
 import { Trophy } from "lucide-react";
-
-const prizes = [
-  { label: "Champion", bonus: 200, icon: "🥇", minRounds: 1 },
-  { label: "Runner-up", bonus: 160, icon: "🥈", minRounds: 1 },
-  { label: "Semifinalist", bonus: 125, icon: "🥉", minRounds: 2 },
-  { label: "Quarterfinalist", bonus: 110, icon: "4th", minRounds: 3 },
-];
+import { getPrizes } from "@/lib/tournament-prizes";
 
 export function TournamentPrizes({ maxPlayers }: { maxPlayers: number }) {
-  const rounds = Math.ceil(Math.log2(maxPlayers));
-  const applicablePrizes = prizes.filter((p) => rounds >= p.minRounds);
+  const prizes = getPrizes(maxPlayers);
 
   return (
     <div>
@@ -18,7 +11,7 @@ export function TournamentPrizes({ maxPlayers }: { maxPlayers: number }) {
         Prizes
       </h2>
       <div className="flex flex-wrap gap-2">
-        {applicablePrizes.map((prize) => (
+        {prizes.map((prize) => (
           <div
             key={prize.label}
             className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2"
